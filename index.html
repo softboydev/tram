@@ -7,36 +7,60 @@
       html,body{
         background: black;
         color: white;
-        font-size: 72px;
-        line-height: 72px;
+        font-size: 36px;
+        line-height: 1rem;
         font-family: monospace;
         padding: 0;
         margin: 0;
         width: 100%;
         height: 100%;
+        text-transform: uppercase;
       }
-      textarea{
-        background: black;
-        color: white;
-        font-size: 72px;
-        line-height: 72px;
-        font-family: monospace;
-        width: 100%;
-        height: calc(100% - 2rem);
-        border: 0;
-        outline: none;
-        margin: auto;
-        padding: 0;
-        margin: 0;
+      .container{
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        width: calc(100% - 3rem);
+        height: calc(100% - 3rem);
+        border: 0.1rem solid white;
       }
       ::selection, ::-moz-selection{
         background: white;
         color: black;
       }
+      h1{
+        font-size: 1rem;
+        margin: 0;
+        padding: 1rem;
+        width: calc(100% - 2rem);
+        border-bottom: 0.1rem solid white;
+      }
+      textarea{
+        color: white;
+        font-size: 1rem;
+        margin: 0;
+        padding: 1rem;
+        width: calc(100% - 2rem);
+        height: calc(90% - 6.2rem);
+        border: 0;
+        background: transparent;
+        outline: none;
+        overflow: hidden;
+        text-align: center;
+      }
+      .footer{
+        width: calc(100% - 2rem);
+        padding: 1rem;
+        min-height: 2rem;
+        border-top: 0.1rem solid white;
+      }
+
     </style>
   <body>
-    TRAM21, (C)2019 JH
-    <textarea>
+    <div class='container'>
+    <h1><span class='left'>TRAM21</span><span class='right'>(C)2019 Johannes Schier</span></h1>
+    <textarea id='input'>
 # '+' kick
 # '~' snare
 # '>' closed high-hat
@@ -46,10 +70,9 @@
 # '.' click
 # '-' pause
 # '#' to mute a line
-# 'X' to select preset
-# '120' to set BPM
     </textarea>
-    <script src="js/requestAnimationFrame.js"></script>
+    <div class='footer'></div>
+  </div>
     <script src="js/index.js"></script>
   </body>
 </html>
