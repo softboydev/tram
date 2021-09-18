@@ -13,7 +13,7 @@
   font-weight: 400;
 }
 html,body{
-  background: black;
+  background: blue;
   color: white;
   font-size: 16px;
   line-height: 1rem;
@@ -24,6 +24,10 @@ html,body{
   height: 100%;
   text-transform: uppercase;
 }
+::selection{
+  background: black !important;
+  color: white !important;
+}
 .container{
   position: fixed;
   top: 50%;
@@ -33,12 +37,19 @@ html,body{
   height: calc(100% - 3rem);
   border: 0.1rem solid white;
 }
-h1{
+.header{
   font-size: 1rem;
   margin: 0;
   padding: 1rem;
   width: calc(100% - 2rem);
+  height: 1rem;
   border-bottom: 0.1rem solid white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 #input{
   color: white;
@@ -47,14 +58,17 @@ h1{
   margin: 0;
   padding: 1rem;
   width: calc(100% - 2rem);
-  height: calc(90% - 4.8rem);
+  height: calc(100% - 8.4rem);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
   border: 0;
   background: transparent;
   outline: none;
   overflow: hidden;
   overflow-y: auto;
   text-align: left;
-  user-select: none;
 }
 #input .mapping{
   color: grey;
@@ -68,8 +82,14 @@ h1{
 .footer{
   width: calc(100% - 2rem);
   padding: 1rem;
-  min-height: 1rem;
+  height: 1rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   border-top: 0.1rem solid white;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
 }
 #transport{
   width: 1rem;
@@ -77,7 +97,9 @@ h1{
   background-image: url("./img/play.png");
   background-size: contain;
   background-position: center;
-  float: right;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 .running #transport{
   background-image: url("./img/pause.png");
@@ -87,5 +109,7 @@ h1{
   background-image: url("./img/stop.png");
 }
 #tempo{
-  float: right;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
 }

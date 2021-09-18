@@ -81,9 +81,9 @@ function createWindow () {
     minHeight: 200,
     backgroundColor: '#000000',
     icon: path.join(__dirname, { darwin: 'icon.icns', linux: 'icon.png', win32: 'icon.ico' }[process.platform] || 'icon.ico'),
-    // frame: process.platform !== 'darwin',
-    // skipTaskbar: process.platform === 'darwin',
-    // autoHideMenuBar: process.platform === 'darwin',
+    frame: process.platform !== 'darwin',
+    skipTaskbar: process.platform === 'darwin',
+    autoHideMenuBar: process.platform === 'darwin',
     webPreferences: {
       devTools: true,
       enableRemoteModule: true,

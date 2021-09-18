@@ -17,6 +17,7 @@ function TRAM(input,ipc,storage){
     buffer: [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]],
     input: ""
   }
+  this.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   this.INPUT = input
   this.OUTPUTS = []
   this.SELECTEDOUTPUT = 0
@@ -138,10 +139,17 @@ function TRAM(input,ipc,storage){
     let output = ""
     let input = this.INPUT.innerText.split('\n').map(x => x.split(''));
     for(let line in input){
-      if(input[line][1] == "="){
-        this.CONFIG.mappings[input[line][0]] = input[line].join("").substring(2).split(":")
+      if(input[line][0] == "#"){
+        //comment
+      }
+      else if(input[line].includes("=")){
+        let splitted = input[line].join("").split("=")
+        this.CONFIG.mappings[splitted[0]] = splitted[1].split(":")
       }
       else{
+        if(input[line].includes(" ")){
+          input[line] = input[line].join("").split(" ")
+        }
         for(let s in input[line]){
           let symbol = input[line][s]
           if(this.CONFIG.mappings[symbol]){
@@ -151,6 +159,7 @@ function TRAM(input,ipc,storage){
         }
       }
     }
+    console.log(this.CONFIG.mappings);
     this.save()
   }
   this.createLoop = function(tempo){
