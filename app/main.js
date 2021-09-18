@@ -1,11 +1,10 @@
-  // window.config =
 
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, Menu, ipcMain, dialog} = require('electron')
 const path = require('path')
 const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
 const storage = require('electron-json-storage');
-
+app.allowRendererProcessReuse = false
 let mainWindow
 
 function isNotEmptyObject(obj){
@@ -43,9 +42,8 @@ function resetStorage(){
     }
   })
 }
-function requireAction(sender,prefix){
-  prefix = prefix || ""
-  mainWindow.webContents.send("require" + prefix + sender.label);
+function requireAction(sender){
+  mainWindow.webContents.send("require" + sender.label.replace(/ /g, ''));
 }
 
 function openFile(){
@@ -83,9 +81,9 @@ function createWindow () {
     minHeight: 200,
     backgroundColor: '#000000',
     icon: path.join(__dirname, { darwin: 'icon.icns', linux: 'icon.png', win32: 'icon.ico' }[process.platform] || 'icon.ico'),
-    frame: process.platform !== 'darwin',
-    skipTaskbar: process.platform === 'darwin',
-    autoHideMenuBar: process.platform === 'darwin',
+    // frame: process.platform !== 'darwin',
+    // skipTaskbar: process.platform === 'darwin',
+    // autoHideMenuBar: process.platform === 'darwin',
     webPreferences: {
       devTools: true,
       enableRemoteModule: true,
@@ -153,6 +151,27 @@ function createMenu(){
         { role: 'toggleDevTools' }
       ]
     },
+    {
+      label: 'Transport',
+      submenu: [
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+Shift+P'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+S'},
+        { type: 'separator' },
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+Numadd'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+Numsub'},
+        // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Up',accelerator: 'CommandOrControl+Shift+Numadd'},
+        // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Down',accelerator: 'CommandOrControl+Shift+Numsub'},
+      ]
+    },
+    {
+      label: 'MIDI',
+      submenu: [
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Output',accelerator: 'CommandOrControl+N'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Output',accelerator: 'CommandOrControl+P'},
+        { type: 'separator' },
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Outputs',accelerator: 'CommandOrControl+M'},
+      ]
+    },
     // { role: 'windowMenu' }
     {
       label: 'Window',
@@ -168,12 +187,6 @@ function createMenu(){
         ] : [
           { role: 'close' }
         ])
-      ]
-    },
-    {
-      role: 'help',
-      submenu: [
-        { label: 'Open Documentation',click (s){createDoc();}, type: 'normal', }
       ]
     }
   ]

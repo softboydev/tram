@@ -15,9 +15,9 @@
 html,body{
   background: black;
   color: white;
-  font-size: 36px;
+  font-size: 16px;
   line-height: 1rem;
-  font-family: monospace;
+  font-family: "Monospace",monospace;
   padding: 0;
   margin: 0;
   width: 100%;
@@ -33,10 +33,6 @@ html,body{
   height: calc(100% - 3rem);
   border: 0.1rem solid white;
 }
-::selection, ::-moz-selection{
-  background: white;
-  color: black;
-}
 h1{
   font-size: 1rem;
   margin: 0;
@@ -44,22 +40,52 @@ h1{
   width: calc(100% - 2rem);
   border-bottom: 0.1rem solid white;
 }
-textarea{
+#input{
   color: white;
   font-size: 1rem;
+  line-height: 1.5em;
   margin: 0;
   padding: 1rem;
   width: calc(100% - 2rem);
-  height: calc(90% - 6.2rem);
+  height: calc(90% - 4.8rem);
   border: 0;
   background: transparent;
   outline: none;
   overflow: hidden;
-  text-align: center;
+  overflow-y: auto;
+  text-align: left;
+  user-select: none;
+}
+#input .mapping{
+  color: grey;
+}
+#input .symbol{
+  color: white;
+}
+#input .symbol.unknown{
+  color: red;
 }
 .footer{
   width: calc(100% - 2rem);
   padding: 1rem;
-  min-height: 2rem;
+  min-height: 1rem;
   border-top: 0.1rem solid white;
+}
+#transport{
+  width: 1rem;
+  height: 1rem;
+  background-image: url("./img/play.png");
+  background-size: contain;
+  background-position: center;
+  float: right;
+}
+.running #transport{
+  background-image: url("./img/pause.png");
+}
+.stopped #transport{
+  background: red;
+  background-image: url("./img/stop.png");
+}
+#tempo{
+  float: right;
 }
