@@ -1,0 +1,65 @@
+@font-face {
+    font-family: "Monospace";
+    font-weight: 400;
+    src: url("./fonts/Roboto_Mono/static/RobotoMono-Regular.ttf");
+}
+@font-face {
+    font-family: "Monospace";
+    font-weight: 700;
+    src: url("./fonts/Roboto_Mono/static/RobotoMono-Bold.ttf");
+}
+*{
+  font-family: "Monospace",monospace;
+  font-weight: 400;
+}
+html,body{
+  background: black;
+  color: white;
+  font-size: 36px;
+  line-height: 1rem;
+  font-family: monospace;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+}
+.container{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: calc(100% - 3rem);
+  height: calc(100% - 3rem);
+  border: 0.1rem solid white;
+}
+::selection, ::-moz-selection{
+  background: white;
+  color: black;
+}
+h1{
+  font-size: 1rem;
+  margin: 0;
+  padding: 1rem;
+  width: calc(100% - 2rem);
+  border-bottom: 0.1rem solid white;
+}
+textarea{
+  color: white;
+  font-size: 1rem;
+  margin: 0;
+  padding: 1rem;
+  width: calc(100% - 2rem);
+  height: calc(90% - 6.2rem);
+  border: 0;
+  background: transparent;
+  outline: none;
+  overflow: hidden;
+  text-align: center;
+}
+.footer{
+  width: calc(100% - 2rem);
+  padding: 1rem;
+  min-height: 2rem;
+  border-top: 0.1rem solid white;
+}
