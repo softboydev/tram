@@ -10,9 +10,30 @@
   </head>
   <body>
     <div class='container'>
-    <header class='header'><span class='left'>TRAM - Typographic Rythm Automation Machine</span><span id="transport"></span></header>
-    <div id='input' contenteditable=""></div>
-    <footer class='footer'><span id="output">Analog Rytm</span><span id="tempo">128BPM</span></footer>
+      <header class='header'>
+        <span class='left'>
+          [O/S]
+        </span>
+        <span class="center">
+          [H] <b>TRAM</b> [<span id="operators"></span>]
+        </span>
+        <span class="right">
+          [T]<span id="transport"></span>
+        </span>
+      </header>
+      <div id='input' spellcheck="false" contenteditable=""></div>
+      <footer class='footer'>
+        <span class="left">
+          [P/N] <span id="output">Analog Rytm</span> [M]
+        </span>
+        <span class="center">
+          [<span id="filename" contenteditable spellcheck="false">untitled</span>.tram]
+        </span>
+        <span class="right">
+          [-/+] <span id="fontsize">16PX</span> [D/U] <span id="tempo">128BPM</span>
+        </span>
+      </footer>
+    </div>
     <script src="./js/renderer.js"></script>
   </body>
 </html>

@@ -11,12 +11,13 @@
 *{
   font-family: "Monospace",monospace;
   font-weight: 400;
+  outline: none;
+  border: 0;
 }
 html,body{
-  background: blue;
-  color: white;
-  font-size: 16px;
-  line-height: 1rem;
+  background: black;
+  color: #cccccc;
+  line-height: 1em;
   font-family: "Monospace",monospace;
   padding: 0;
   margin: 0;
@@ -24,82 +25,89 @@ html,body{
   height: 100%;
   text-transform: uppercase;
 }
+body{
+  font-size: 16px;
+}
+b{
+  color: white;
+}
 ::selection{
   background: black !important;
-  color: white !important;
+  color: #ffffff !important;
 }
 .container{
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  width: calc(100% - 3rem);
-  height: calc(100% - 3rem);
-  border: 0.1rem solid white;
-}
-.header{
-  font-size: 1rem;
-  margin: 0;
-  padding: 1rem;
-  width: calc(100% - 2rem);
-  height: 1rem;
-  border-bottom: 0.1rem solid white;
-  position: absolute;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  user-select: none;
-  pointer-events: none;
+  top: 1em;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: calc(100% - 2em);
 }
 #input{
-  color: white;
-  font-size: 1rem;
+  font-family: "Monospace",monospace !important;
+  color: #cccccc;
+  font-size: 1em;
   line-height: 1.5em;
   margin: 0;
-  padding: 1rem;
-  width: calc(100% - 2rem);
-  height: calc(100% - 8.4rem);
+  width: 100%;
+  height: calc(100% - 4em);
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
+  top: 2em;
+  left: 0;
   border: 0;
   background: transparent;
   outline: none;
   overflow: hidden;
   overflow-y: auto;
   text-align: left;
+  text-transform: none;
 }
-#input .mapping{
-  color: grey;
+#input span{
+  font-family: "Monospace",monospace !important;
 }
-#input .symbol{
-  color: white;
-}
-#input .symbol.unknown{
-  color: red;
-}
-.footer{
-  width: calc(100% - 2rem);
-  padding: 1rem;
-  height: 1rem;
+.header{
+  font-size: 1em;
+  line-height: 1em;
+  margin: 0;
+  width: 100%;
+  height: 1em;
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
-  border-top: 0.1rem solid white;
-  overflow: hidden;
+  /* overflow: hidden; */
   user-select: none;
   pointer-events: none;
 }
+.header .left{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: black;
+  padding-right: 1em;
+}
+.header .center{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: black;
+  padding: 0 1em;
+}
+.header .right{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: black;
+  padding-left: 1em;
+}
 #transport{
-  width: 1rem;
-  height: 1rem;
+  margin-left: 0.4em;
+  transform: translateY(0.05em);
+  width: 0.8em;
+  height: 0.8em;
   background-image: url("./img/play.png");
   background-size: contain;
   background-position: center;
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  display: inline-block;
 }
 .running #transport{
   background-image: url("./img/pause.png");
@@ -108,8 +116,50 @@ html,body{
   background: red;
   background-image: url("./img/stop.png");
 }
-#tempo{
+.footer{
+  line-height: 1em;
+  width: 100%;
+  height: 1em;
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 0;
+  left: 0;
+  /* overflow: hidden; */
+  user-select: none;
+  /* pointer-events: none; */
+}
+.footer .left{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: black;
+  padding-right: 1em;
+}
+.footer .center{
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: black;
+  padding: 0 1em;
+}
+.footer .right{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: black;
+  padding-left: 1em;
+}
+#output{
+  color: #ffffff;
+}
+#tempo{
+  color: #ffffff;
+}
+#operators{
+  color: #ffffff
+}
+#filename{
+  min-width: 12px;
+  display: inline-block;
+  color: #ffffff;
 }

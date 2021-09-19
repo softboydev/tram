@@ -63,7 +63,7 @@ function openFile(){
               console.log("Error storing JSON " + error)
             }
             else{
-              requireUpdate()
+              requireAction({label:"Update"})
             }
           })
         }
@@ -81,9 +81,9 @@ function createWindow () {
     minHeight: 200,
     backgroundColor: '#000000',
     icon: path.join(__dirname, { darwin: 'icon.icns', linux: 'icon.png', win32: 'icon.ico' }[process.platform] || 'icon.ico'),
-    frame: process.platform !== 'darwin',
-    skipTaskbar: process.platform === 'darwin',
-    autoHideMenuBar: process.platform === 'darwin',
+    // frame: process.platform !== 'darwin',
+    // skipTaskbar: process.platform === 'darwin',
+    // autoHideMenuBar: process.platform === 'darwin',
     webPreferences: {
       devTools: true,
       enableRemoteModule: true,
@@ -148,17 +148,31 @@ function createMenu(){
         { role: 'reload' },
         { role: 'forceReload' },
         { role: 'togglefullscreen' },
-        { role: 'toggleDevTools' }
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom In',accelerator: 'CommandOrControl+Numadd'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom Out',accelerator: 'CommandOrControl+Numsub'},
+      ]
+    },
+    {label: "Edit",
+      submenu: [
+          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+          { type: "separator" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     },
     {
       label: 'Transport',
       submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+Shift+P'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+S'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+T'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+T'},
         { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+Numadd'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+Numsub'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+U'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+D'},
         // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Up',accelerator: 'CommandOrControl+Shift+Numadd'},
         // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Down',accelerator: 'CommandOrControl+Shift+Numsub'},
       ]
