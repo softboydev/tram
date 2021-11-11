@@ -2,17 +2,21 @@
 
 # TRAM
 
-TRAM is short for Typographic Rythm Automation Machine and is a experimental MIDI sequencer. Map a midi message to a symbol, map a set of symbols to another symbol, combine symbols into bars, combine bars into beats.
+TRAM is short for Typographic Rythm Automation Machine and is a experimental MIDI sequencer. Map a midi message to a symbol, map a set of symbols to another symbol, combine symbols into bars, combine bars into beats. TRAM features a minimalistic UI, autosave and immediate code evaluation so it's perfect for livecoding performances.
 
-TRAM features a minimalistic UI, autosave and immediate code evaluation so it's made for livecoding.
-
-![banner](./img/screenshot-1.jpg)
+![New TRAM 1](./img/screenshot-1.jpg)
 
 *Wide UI*
 
-![banner](./img/screenshot-2.jpg)
+![New TRAM 2](./img/screenshot-2.jpg)
 
 *Narrow UI*
+
+TRAM got it's name from a typographic sample based drumcomputer I wrote in 2019. I had the idea while driving the Berlin tram. This how the original looked like:
+
+![Old Tram 1](./img/preview-1.jpg)
+
+![Old Tram 2](./img/preview-2.jpg)
 
 ## Installation
 
