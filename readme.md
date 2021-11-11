@@ -25,7 +25,7 @@ There are three ways to use TRAM. Either install a build for your platform from 
 Or run it within electron.js
 
 ```
-git clone
+git clone https://github.com/acidatm/tram.git
 cd tram/app
 npm install
 npm start
@@ -34,7 +34,7 @@ npm start
 Or build a build of your choice with electron forge
 
 ```
-git clone
+git clone https://github.com/acidatm/tram.git
 cd tram/app
 npm install
 npm run build_osx
