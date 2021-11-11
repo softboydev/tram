@@ -42,7 +42,8 @@ b{
   width: calc(100% - 2em);
   height: calc(100% - 2em);
 }
-#input{
+#input,
+#help{
   font-family: "Monospace",monospace !important;
   color: #cccccc;
   font-size: 1em;
@@ -60,6 +61,15 @@ b{
   overflow-y: auto;
   text-align: left;
   text-transform: none;
+}
+#help{
+  display: none;
+  pointer-events: none;
+  z-index: 2;
+  background: black;
+}
+#help.is-active{
+  display: block;
 }
 #input span{
   font-family: "Monospace",monospace !important;
@@ -148,6 +158,7 @@ b{
   right: 0;
   background: black;
   padding-left: 1em;
+  text-align: right;
 }
 #output{
   color: #ffffff;
@@ -162,4 +173,21 @@ b{
   min-width: 12px;
   display: inline-block;
   color: #ffffff;
+}
+.shortcut{
+  color: #888888;
+}
+@media (max-width: 912px){
+  .shortcut,
+  .detail{
+    display: none;
+  }
+  .footer .center{
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    bottom: auto;
+    transform: none;
+    padding: 0;
+  }
 }

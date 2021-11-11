@@ -12,25 +12,26 @@
     <div class='container'>
       <header class='header'>
         <span class='left'>
-          [O/S]
+          <span class='shortcut'>[O/S]</span>
         </span>
         <span class="center">
-          [H] <b>TRAM</b> [<span id="operators"></span>]
+          <span class='shortcut'>[?]</span> <b>TRAM</b> [<span id="operators"></span>] <span class='shortcut'>[I/0]</span> <span id="fontsize" class="detail">16PX</span>
         </span>
         <span class="right">
-          [T]<span id="transport"></span>
+          <span id="transportsend" class="detail">send</span> <span id="transportrecieve" class="detail">recieve</span> <span class='shortcut'>[P/S]</span><span id="transport"></span>
         </span>
       </header>
       <div id='input' spellcheck="false" contenteditable=""></div>
+      <div id='help'></div>
       <footer class='footer'>
         <span class="left">
-          [P/N] <span id="output">Analog Rytm</span> [M]
+          <span class='shortcut'>[N/M]</span> <span id="output">Korg Volca Beats [1/1]</span> [M]</span>
         </span>
         <span class="center">
           [<span id="filename" contenteditable spellcheck="false">untitled</span>.tram]
         </span>
         <span class="right">
-          [-/+] <span id="fontsize">16PX</span> [D/U] <span id="tempo">128BPM</span>
+           <span class='shortcut'>[-/+]</span> <span id="tempo">128BPM</span> <span id="clocktype" class="detail">24ppq</span> <span id="clocksend" class="detail">send</span> <span id="clockrecieve" class="detail">recieve</span>
         </span>
       </footer>
     </div>

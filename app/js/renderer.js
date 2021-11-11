@@ -7,20 +7,24 @@ const ipc = require('electron').ipcRenderer;
 /*RUNTIME*/
 window.addEventListener('load',function(){
   const input = document.getElementById('input')
-  new TRAM(input,ipc,storage)
+  window.TRAM = new TRAM(input,ipc,storage)
 })
 /*DRUMMACHINE*/
 function TRAM(input,ipc,storage){
   this.CONFIG = {
     filename: "untitled",
     tempo: 128,
+    clocksend: false,
+    transportsend: false,
+    clockrecieve: false,
+    transportrecieve: false,
+    clocktype: false,
     fontsize: 16,
     mappings: {},
+    maps: {},
     buffer: [],
-    input: ""
-  }
-  this.EMPTY = function(){
-    return [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+    input: "",
+    mapInput: ""
   }
   this.NOTES = "CcDdEFfGgAaH"
   this.INPUT = input
@@ -30,6 +34,7 @@ function TRAM(input,ipc,storage){
   this.POSITION = 0
   this.MIDI = false
   this.LOOP = false
+  this.CLOCK = false
   this.RUNNING = false
   this.TEMPOCHANGETIMESTAMP = performance.now()
   this.export = function(){
@@ -57,17 +62,23 @@ function TRAM(input,ipc,storage){
         this.setTempo(this.CONFIG.tempo)
         this.setFontsize(this.CONFIG.fontsize)
         this.setFilename(this.CONFIG.filename)
-        this.setOperators(this.CONFIG.mappings)
+        this.setClockSend(this.CONFIG.clocksend)
+        this.setClockRecieve(this.CONFIG.clockrecieve)
+        this.setTransportSend(this.CONFIG.transportsend)
+        this.setTransportRecieve(this.CONFIG.transportrecieve)
+        this.setClockType(this.CONFIG.transportrecieve)
+        this.setOperators()
       }
     }.bind(this));
   }
   this.save = function(){
+    console.log(this.CONFIG);
     storage.set("config", JSON.stringify(this.CONFIG), function(error) {
       if (error){
         throw error
       }
       else{
-        //
+        // ipc.send("requestUpdate","")
       }
     }.bind(this));
   }
@@ -77,7 +88,6 @@ function TRAM(input,ipc,storage){
       console.log( "Failed to get MIDI access - " + msg );
     }
     navigator.requestMIDIAccess().then(this.onMidiSuccess, onMIDIFailure );
-    // navigator.requestMIDIAccess().then((access){console.log(access.outputs)}).catch((error){}))
   }
   this.refreshMidiOutputs = function(){
     this.OUTPUTS = []
@@ -90,8 +100,15 @@ function TRAM(input,ipc,storage){
   this.setMidiOutput = function(){
     if(this.OUTPUTS[this.SELECTEDOUTPUT]){
       this.OUTPUT = this.OUTPUTS[this.SELECTEDOUTPUT]
+      this.OUTPUT.open()
       document.getElementById("output").innerText = this.OUTPUT.name + " (" + (this.SELECTEDOUTPUT + 1) + "/" + this.OUTPUTS.length + ")"
     }
+  }
+  this.toggleHelp = function(){
+    let operators = Object.keys(this.CONFIG.mappings).join("")
+    help = document.getElementById("help")
+    help.innerText = "Use # for comments\nUse = for variables\nUse " + operators + "  for beats\nUse CMD/STRG for shortcuts"
+    help.classList.toggle("is-active")
   }
   this.onMidiSuccess = function(midiAccess){
     this.MIDI = midiAccess
@@ -118,12 +135,26 @@ function TRAM(input,ipc,storage){
       this.RUNNING = !this.RUNNING
       this.RUNNING ? document.body.classList.add("running") : document.body.classList.remove("running")
       document.body.classList.remove("stopped")
+      if(this.POSITION == 0 && this.RUNNING && this.OUTPUT.send && this.CONFIG.transportsend){
+        this.send([0xFA]) //start clock after stop
+      }
+      else if(this.RUNNING && this.OUTPUT.send && this.CONFIG.transportsend){
+        this.send([0xFB]) //continue clock after pause
+      }
+      else if(!this.RUNNING && this.OUTPUT.send && this.CONFIG.transportsend){
+        this.send([0xFC]) //stop clock
+      }
     }.bind(this));
     ipc.on('requireStop', function () {
+      if(this.OUTPUT.send && this.CONFIG.transportsend){
+        this.send([0xFC]) //stop clock
+        this.send([0xFF]) //reset clock
+      }
       this.RUNNING = false
       this.POSITION = 0
       document.body.classList.add("stopped")
       document.body.classList.remove("running")
+
     }.bind(this));
     ipc.on('requireTempoUp', function () {
       this.setTempo(this.CONFIG.tempo + 1)
@@ -137,19 +168,23 @@ function TRAM(input,ipc,storage){
     ipc.on('requireZoomOut', function () {
       this.setFontsize(this.CONFIG.fontsize - 1)
     }.bind(this));
-    // ipc.on('requireTempoUp', function () {
-    //   this.setTempo(Math.round((this.CONFIG.tempo + 1) * 10) * 0.1)
-    // }.bind(this));
-    // ipc.on('requireTempoDown', function () {
-    //   this.setTempo(Math.round((this.CONFIG.tempo - 1) * 10) * 0.1)
-    // }.bind(this));
-    // ipc.on('requireTempoNotchUp', function () {
-    //   this.setTempo(Math.round((this.CONFIG.tempo + 0.1) * 10) * 0.1)
-    // }.bind(this));
-    // ipc.on('requireTempoNotchDown', function () {
-    //   this.setTempo(Math.round((this.CONFIG.tempo - 0.1) * 10) * 0.1)
-    // }.bind(this));
-    ipc.on('requireNextMidiOutput', function () {
+    ipc.on('requireToggleClockSend', function () {
+      this.setClockSend(!this.CONFIG.clocksend)
+    }.bind(this));
+    ipc.on('requireToggleClockRecieve', function () {
+      this.setClockRecieve(!this.CONFIG.clockrecieve)
+    }.bind(this));
+    ipc.on('requireToggleTransportSend', function () {
+      this.setTransportSend(!this.CONFIG.transportsend)
+    }.bind(this));
+    ipc.on('requireToggleTransportRecieve', function () {
+      this.setTransportRecieve(!this.CONFIG.transportrecieve)
+    }.bind(this));
+    ipc.on('requireToggleClockType', function () {
+      this.setClockType(!this.CONFIG.clocktype)
+      this.createLoop()
+    }.bind(this));
+    ipc.on('requireNextMidiDevice', function () {
       let next = this.SELECTEDOUTPUT + 1
       if(next >= this.OUTPUTS.length){
         next = 0
@@ -157,7 +192,10 @@ function TRAM(input,ipc,storage){
       this.SELECTEDOUTPUT = next
       this.setMidiOutput()
     }.bind(this));
-    ipc.on('requirePreviousMidiOutput', function () {
+    ipc.on('requireSweepMidi', function () {
+      this.sweep()
+    }.bind(this));
+    ipc.on('requirePreviousMidiDevice', function () {
       let next = this.SELECTEDOUTPUT - 1
       if(next < 0){
         next = this.OUTPUTS.length - 1
@@ -165,10 +203,16 @@ function TRAM(input,ipc,storage){
       this.SELECTEDOUTPUT = next
       this.setMidiOutput()
     }.bind(this));
-    ipc.on('requireRefreshMidiOutputs', function () {
+    ipc.on('requireRefreshMidiDevices', function () {
       this.refreshMidiOutputs
     }.bind(this));
+    ipc.on('requireHelp', function () {
+      this.toggleHelp()
+    }.bind(this));
     this.RUNNING = true
+    if(this.OUTPUT.send){
+      this.send([0xFA]) //start midi clock
+    }
     this.createLoop(this.CONFIG.tempo)
     document.body.classList.add("running")
   }.bind(this)
@@ -176,22 +220,19 @@ function TRAM(input,ipc,storage){
     this.CONFIG.buffer = []
     this.CONFIG.mappings = {}
     this.CONFIG.input = this.INPUT.innerText
-    let output = ""
     let input = this.INPUT.innerText.split('\n').map(x => x.split(''));
     let buffer = []
-    let _line = 0
     for(let line in input){
       if(input[line][0] == "#"){
         //comment
       }
-      else if(input[line].includes("=")){
+      else if(input[line].includes("=")){ //mapping
         let splitted = input[line].join("").split("=")
         let midi = splitted[1].split(/:| |,|\.|\-|\|/)
         if(midi.length == 3){
           midi[0] = isNaN(Number(midi[0])) ? 1 : Number(midi[0])
           if(midi[0] < 128){
             let channel = Math.max(1,Math.min(midi[0],16))
-            console.log(channel);
             midi[0] = channel + 143
           }
           if(isNaN(Number(midi[1]))){
@@ -210,42 +251,43 @@ function TRAM(input,ipc,storage){
           this.CONFIG.mappings[splitted[0]] = splitted[1]
         }
       }
-      else{
-        buffer.push([this.EMPTY()])
-        if(input[line].includes(" ")){
+      else if(input[line].length){ //symbols
+        if(input[line].includes(" ")){ //remove spaces when words are used
           input[line] = input[line].join("").split(" ")
         }
-        let flag = false
-        let pointer = 0
-        for(let s in input[line]){
-          if(flag){
-            buffer[_line].push(this.EMPTY())
-            flag = false
-          }
-          let symbol = input[line][s]
-          if(this.CONFIG.mappings[symbol]){
-            if(typeof this.CONFIG.mappings[symbol] == "string"){
-              let bar = this.CONFIG.mappings[symbol].split("")
-              for(let b in bar){
-                symbol = bar[b]
-                let n = Math.floor(16 * b / bar.length)
-                buffer[_line][pointer][n].push(symbol)
+        let symbols = input[line]
+        let allAtomic = false
+        let r = 0 //recursion counter
+        let lastR = 10
+        while(!allAtomic && r <= lastR){
+          allAtomic = true
+          let sMax = symbols.length
+          for(let s = sMax - 1; s >= 0; s--){
+            let symbol = symbols[s]
+              if(this.CONFIG.mappings[symbol]){ //when the symbol can be mapped
+                if(typeof this.CONFIG.mappings[symbol] == "string"){ //when the symbol is not atomic
+                  if(r != lastR){ //when not in last round of recursion
+                    let sub = this.CONFIG.mappings[symbol] //store a sub array
+                    sub = sub.includes(" ") ? sub.split(" ") : sub.split("") //when the subarray contains words
+                    symbols.splice(s, 1, ...sub) //insert the subarray into the main array
+                    allAtomic = false //reset the flag
+                  }
+                  else{ //when in last round of recursion
+                    symbols.splice(s, 1);
+                  }
+                }
               }
-              pointer++
-              flag = true
+              else{ //when the symbol cant be mapped
+                symbols[s] = "" //insert an empty string into array
+              }
             }
-            else{
-              let n = Math.floor(16 * s / input[line].length)
-              buffer[_line][pointer][n].push(symbol)
-            }
+            r++
           }
+          buffer.push(symbols)
         }
-        _line++
       }
-    }
     this.CONFIG.buffer = buffer
-    console.log(buffer);
-    this.setOperators(this.CONFIG.mappings)
+    this.setOperators()
     this.save()
   }
   this.createLoop = function(tempo){
@@ -255,11 +297,18 @@ function TRAM(input,ipc,storage){
         this.play()
         this.POSITION++
       }
-    }.bind(this), 15000 / this.CONFIG.tempo);
+    }.bind(this), 60000 / this.CONFIG.tempo / 4);
+    let d = this.CONFIG.clocktype ? 48 : 24
+    this.CLOCK = setInterval(function() {
+      if(this.RUNNING && this.OUTPUT.send && this.CONFIG.clocksend){
+        this.send([0xF8])
+      }
+    }.bind(this), 60000 / this.CONFIG.tempo / d)
   }
   this.removeLoop = function(){
     // if(this.LOOP){
       clearInterval(this.LOOP)
+      clearInterval(this.CLOCK)
     // }
   }
   this.setTempo = function(tempo){
@@ -269,7 +318,7 @@ function TRAM(input,ipc,storage){
       this.CONFIG.tempo = Number(tempo)
       this.save()
       document.getElementById("tempo").innerText = tempo + "BPM"
-      this.createLoop(tempo)+
+      this.createLoop(tempo)
       setTimeout(function () {
         if(performance.now() - this.TEMPOCHANGETIMESTAMP > 100){
           this.RUNNING = true
@@ -288,24 +337,57 @@ function TRAM(input,ipc,storage){
   this.setFilename = function(name){
     document.getElementById("filename").innerText = name
     this.CONFIG.filename = name
+    this.save()
   }
-  this.setOperators = function(mappings){
-    document.getElementById("operators").innerText = Object.keys(mappings).join("")
+  this.setOperators = function(){
+    document.getElementById("operators").innerText = Object.keys(this.CONFIG.mappings).map(x => typeof this.CONFIG.mappings[x] != "string" ? x : "").join("")
+  }
+  this.setClockSend = function(flag){
+    this.CONFIG.clocksend = flag
+    this.save()
+    document.getElementById("clocksend").innerText = flag ? "send" : "nosend"
+  }
+  this.setClockRecieve = function(flag){
+    this.CONFIG.clockrecieve = flag
+    this.save()
+    document.getElementById("clockrecieve").innerText = flag ? "recieve" : "norecieve"
+  }
+  this.setTransportSend = function(flag){
+    this.CONFIG.transportsend = flag
+    this.save()
+    document.getElementById("transportsend").innerText = flag ? "send" : "nosend"
+  }
+  this.setTransportRecieve = function(flag){
+    this.CONFIG.transportrecieve = flag
+    this.save()
+    document.getElementById("transportrecieve").innerText = flag ? "recieve" : "norecieve"
+  }
+  this.setClockType = function(flag){
+    this.CONFIG.clocktype = flag
+    this.save()
+    document.getElementById("clocktype").innerText = flag ? "48ppq" : "24ppq"
   }
   this.play = function(){
-    for(let line of this.CONFIG.buffer){
-      let position = this.POSITION % (16 * line.length)
-      for(let b in line){
-        let bar = line[b]
-        if(Math.floor(position / 16) == b){
-          let p = position % 16
-          for(let t in bar[p]){
-            let trigger = bar[p][t]
-            if(trigger){
-              this.OUTPUT.send(this.CONFIG.mappings[trigger])
-            }
-          }
+    if(this.OUTPUT.send){
+      for(let line of this.CONFIG.buffer){
+        let p = this.POSITION % line.length
+        if(line[p] && this.CONFIG.mappings[line[p]]){
+          this.send(this.CONFIG.mappings[line[p]])
         }
+      }
+    }
+  }
+  this.send = function(cmd){
+    let func = cmd[0]
+    if(143 < func && func < 160){ //if note on should be sent
+      this.OUTPUT.send([func - 16,cmd[1],cmd[2]],performance.now()) //send note off on same channel beforehands
+    }
+    this.OUTPUT.send(cmd)
+  }
+  this.sweep = function(){
+    for(let a = 128; a <= 160; a++){
+      for(let b= 0; b <= 127; b++){
+        this.OUTPUT.send([a,b,100])
       }
     }
   }

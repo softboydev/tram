@@ -89,7 +89,12 @@ function createWindow () {
       enableRemoteModule: true,
       nodeIntegration: true,
       contextIsolation: false,
-      preload: path.join(__dirname, 'preload.js')
+      backgroundThrottling: false
+    }
+  })
+    mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'midi') {
+      return callback(true)
     }
   })
   mainWindow.on('close', function() {
@@ -110,7 +115,6 @@ function createWindow () {
   })
   mainWindow.loadFile('index.html')
 }
-
 function createMenu(){
 
   const isMac = process.platform === 'darwin'
@@ -150,8 +154,8 @@ function createMenu(){
         { role: 'togglefullscreen' },
         { role: 'toggleDevTools' },
         { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom In',accelerator: 'CommandOrControl+Numadd'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom Out',accelerator: 'CommandOrControl+Numsub'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom In',accelerator: 'CommandOrControl+Shift+I'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom Out',accelerator: 'CommandOrControl+Shift+O'},
       ]
     },
     {label: "Edit",
@@ -168,22 +172,26 @@ function createMenu(){
     {
       label: 'Transport',
       submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+T'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+T'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+Shift+P'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+S'},
         { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+U'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+D'},
-        // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Up',accelerator: 'CommandOrControl+Shift+Numadd'},
-        // {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Notch Down',accelerator: 'CommandOrControl+Shift+Numsub'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+Shift+Numadd'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+Shift+Numsub'}
       ]
     },
     {
       label: 'MIDI',
       submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Output',accelerator: 'CommandOrControl+N'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Output',accelerator: 'CommandOrControl+P'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Device',accelerator: 'CommandOrControl+Shift+N'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Device',accelerator: 'CommandOrControl+Shift+M'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Devices',accelerator: 'CommandOrControl+M'},
         { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Outputs',accelerator: 'CommandOrControl+M'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Send'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Recieve'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Type'},
+        { type: 'separator' },
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Send'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Recieve'},
       ]
     },
     // { role: 'windowMenu' }
@@ -192,7 +200,10 @@ function createMenu(){
       submenu: [
         { role: 'minimize' },
         { role: 'zoom' },
-        { type: 'separator' },
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Help',accelerator: 'CommandOrControl+?'},
+        // { type: 'separator' },
+        // { label: 'Open Mappings',click (s){createMap();}, type: 'normal'},
+        // { label: 'Close Mappings',click (s){destroyMap();}, type: 'normal'},
         ...(isMac ? [
           { type: 'separator' },
           { role: 'front' },
