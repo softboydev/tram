@@ -14,7 +14,9 @@ function isNotEmptyObject(obj){
 ipcMain.on('requestUpdate', (event) => {
     requireUpdate()
 })
-
+ipcMain.on('requireOpen', (event) => {
+    openFile()
+})
 function requireUpdate(){
   mainWindow.webContents.send("requireUpdate");
 }
@@ -182,13 +184,17 @@ function createMenu(){
     {
       label: 'MIDI',
       submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Device',accelerator: 'CommandOrControl+Shift+N'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Device',accelerator: 'CommandOrControl+Shift+M'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Devices',accelerator: 'CommandOrControl+M'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+>'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+<'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+Option+>'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+Option+<'},
+
         { type: 'separator' },
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Send'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Recieve'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Type'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Source'},
         { type: 'separator' },
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Send'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Recieve'},

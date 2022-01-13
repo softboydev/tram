@@ -12,26 +12,31 @@
     <div class='container'>
       <header class='header'>
         <span class='left'>
-          <span class='shortcut'>[O/S]</span>
+          <span class='shortcut'>[<span id="uiOpen">O</span>/<span id="uiSave">S</span>]</span>
         </span>
         <span class="center">
-          <span class='shortcut'>[?]</span> <b>TRAM</b> [<span id="operators"></span>] <span class='shortcut'>[I/0]</span> <span id="fontsize" class="detail">16PX</span>
+          <span class='shortcut'>[<span id="uiHelp">?</span>]</span> <b>TRAM</b> [<span id="operators"></span>] <span class='shortcut'>[<span id="uiIn">I</span>/<span id="uiOut">O</span>]</span> <span id="fontsize" class="detail">16PX</span>
         </span>
         <span class="right">
-          <span id="transportsend" class="detail">send</span> <span id="transportrecieve" class="detail">recieve</span> <span class='shortcut'>[P/S]</span><span id="transport"></span>
+          <span id="transportsend" class="detail">send</span> <span id="transportrecieve" class="detail">recieve</span><br class="ui-break">
+           <span class='shortcut'>[P/S]</span><span id="transport"></span>
         </span>
       </header>
       <div id='input' spellcheck="false" contenteditable=""></div>
       <div id='help'></div>
       <footer class='footer'>
         <span class="left">
-          <span class='shortcut'>[N/M]</span> <span id="output">Korg Volca Beats [1/1]</span> [M]</span>
+          MIDI IO [<span id="uiMidi">M</span>]<br>
+          I <span id="inputs">No Device [0/0]</span> <span class='shortcut'>[<span id="uiInPrev">&lt;</span>\<span id="uiInNext">&gt;</span>]</span><br>
+          O <span id="outputs">No Device [0/0]</span> <span class='shortcut'>[<span id="uiOutPrev">&lt;</span>\<span id="uiOutNext">&gt;</span>]</span>
         </span>
         <span class="center">
           [<span id="filename" contenteditable spellcheck="false">untitled</span>.tram]
         </span>
         <span class="right">
-           <span class='shortcut'>[-/+]</span> <span id="tempo">128BPM</span> <span id="clocktype" class="detail">24ppq</span> <span id="clocksend" class="detail">send</span> <span id="clockrecieve" class="detail">recieve</span>
+          <span class='shortcut'>[<span id="uiSlower">-</span>/<span id="uiFaster">+</span>]</span> <span id="tempo">128BPM</span><br class="ui-break">
+          <span id="clocksource" class="detail">INT</span> <span id="clocktype" class="detail">24ppq</span> <br class="ui-break">
+           <span id="clocksend" class="detail">send</span> <span id="clockrecieve" class="detail">recieve</span>
         </span>
       </footer>
     </div>
