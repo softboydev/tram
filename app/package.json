@@ -7,8 +7,7 @@
     "start": "electron .",
     "build_osx": "electron-packager . TRAM --platform=darwin --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.icns ; echo 'Built for OSX'",
     "build_linux": "electron-packager . TRAM --platform=linux  --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.ico ; echo 'Built for LINUX'",
-    "build_win": "electron-packager . TRAM --platform=win32  --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.ico ; echo 'Built for WIN'",
-    "build_deb": "electron-installer-debian --src ~/Documents/TRAM-linux-x64 --dest ~/Documents/TRAM  --overwrite --icon=icon.ico --arch amd64"
+    "build_win": "electron-packager . TRAM --platform=win32  --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.ico ; echo 'Built for WIN'"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [],
