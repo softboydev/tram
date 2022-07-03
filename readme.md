@@ -45,8 +45,7 @@ You can run any of these build commands
 ```
 build_osx -> Mac OS
 build_win -> Windows
-build_linux -> Non Debian Linux
-build_deb -> Debian Linux
+build_linux -> Linux
 ```
 
 ## Usage
@@ -62,6 +61,20 @@ You can change the filename by clicking between the two square brackets in the b
 You can change the fontsize from the menu or using shortcuts.
 
 Using *Window/Help* or *Cmd/Strg+?* will display a super short help popup. You need to close it the same way.
+
+Try this beat for starters:
+
+```
+.=<<<<
+....
+++++
+$$
+,=-->-
+,,,,
+*
+!!!
+?????
+```
 
 ### Mapping
 
@@ -86,8 +99,7 @@ HATS = <<><
 The mapping needs to follow a certain convention. The part behind the `=` will be split by any of these separators:
 
 - empty space
-
--  commata
+- commata
 - dot
 - minus
 - vertical line
@@ -104,7 +116,6 @@ You may use shorthands. By typing a number between 1 and 16 as the midi message 
 
 Note off commands are sent automatically whenever you send a note on command. The note off command is sent right before the note on command. You can send additional note off commands manually, for example when you want a note to be held short then until the next note.
 
-You can find some default mappings in the `/defaults` folder of the git repo.
 
 ### Programming
 
@@ -135,4 +146,13 @@ Below you can find release notes on all major releases that had a dedicated buil
 
 - **0.1.0** Release of the initial alpha version
 
-Feel free to send more default mapping to me or add them as a pull request.
+## Planned Features
+
+- Enevitable bug fixes
+- Steadier midi clock
+- Click and Bar counter
+- "Lauflichtprogrammierung" so highlights on the currently active step
+- Decaying comments such as `#16` disappearing after 16 bars
+- Variables in mappings such as `S{n} = 1:{n}:100` leading to `S{C4}` playing a C4 and `S{D4}` playing a D4
+- Display of external tempo and also blinking in sync
+- Midi note delay time option to stop jitter/async notes
