@@ -10,7 +10,7 @@ window.addEventListener('load',function(){
 /*DRUMMACHINE*/
 function TRAM(input,ipc){
   this.CONFIG = {
-    filename: "untitled",
+    filename: "haffegroove",
     tempo: 128,
     clocksend: true,
     transportsend: true,
@@ -18,8 +18,8 @@ function TRAM(input,ipc){
     transportrecieve: false,
     clocktype: false,
     clocksource: false,
-    fontsize: 36,
-    mappings: {},
+    fontsize: 24,
+    mappings: {"+":[144,36,100],"$":[144,38,100],"!":[144,43,100],"?":[144,50,100],"<":[144,42,100],">":[144,46,100],"*":[144,39,100]},
     maps: {},
     buffer: [],
     input: "",
@@ -178,6 +178,7 @@ function TRAM(input,ipc){
     if(this.OUTPUTS[this.SELECTEDOUTPUT]){
       this.OUTPUT = this.OUTPUTS[this.SELECTEDOUTPUT]
       this.OUTPUT.open()
+      this.start()
       document.getElementById("outputs").innerText = this.OUTPUT.name + " (" + (this.SELECTEDOUTPUT + 1) + "/" + this.OUTPUTS.length + ")"
     }
   }
@@ -247,9 +248,11 @@ function TRAM(input,ipc){
     this.RUNNING = true
     document.body.classList.remove("stopped")
     document.body.classList.add("running")
+    console.log("st")
     if(this.OUTPUT.send && this.CONFIG.transportsend){
       this.send([0xFF]) //reset clock
       this.send([0xFA]) //start clock after stop
+      console.log("start")
     }
   }
   this.continue = function(){
@@ -350,12 +353,13 @@ function TRAM(input,ipc){
       this.toggleHelp()
     }.bind(this));
     this.createLoop(this.CONFIG.tempo)
+    this.setFontsize(this.CONFIG.fontsize)
     this.start()
     document.body.classList.add("running")
   }.bind(this)
   this.refresh = function(){
     this.CONFIG.buffer = []
-    this.CONFIG.mappings = {}
+    // this.CONFIG.mappings = {}
     this.CONFIG.input = this.EDITOR.innerText
     let input = this.EDITOR.innerText.split('\n').map(x => x.split(''));
     let buffer = []
@@ -419,6 +423,30 @@ function TRAM(input,ipc){
               }
             }
             r++
+          }
+          //split buffer into chunks of up to 16 symbols
+          let bars = []
+          while(symbols.length){
+            if(symbols.length > 16){
+              bars.push(symbols.splice(0, 16))
+            }
+            else{
+              bars.push(symbols)
+              symbols = false
+            }
+          }
+          symbols = []
+          while(bars.length){
+            let bar = ["","","","","","","","","","","","","","","",""]
+            let b = bars.splice(0,1)[0]
+            let m = 16 / b.length
+            let n = 0
+            while(b.length){
+              let c = b.splice(0,1)[0]
+              bar[Math.floor(m*n)] = c
+              n++
+            }
+            symbols = symbols.concat(bar)
           }
           buffer.push(symbols)
         }

@@ -84,15 +84,15 @@ function createMenu(){
       ]
     }] : []),
     // { role: 'fileMenu' }
-    {
-      label: 'File',
-      submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Save',accelerator: 'CommandOrControl+S'},
-        {  click (s){openFile();}, type: 'normal', label: 'Open',accelerator: 'CommandOrControl+O' },
-        { type: 'separator' },
-        isMac ? { role: 'close' } : { role: 'quit' }
-      ]
-    },
+    // {
+    //   label: 'File',
+    //   submenu: [
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Save',accelerator: 'CommandOrControl+S'},
+    //     {  click (s){openFile();}, type: 'normal', label: 'Open',accelerator: 'CommandOrControl+O' },
+    //     { type: 'separator' },
+    //     isMac ? { role: 'close' } : { role: 'quit' }
+    //   ]
+    // },
     // { role: 'viewMenu' }
     {
       label: 'View',
@@ -117,35 +117,35 @@ function createMenu(){
           { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     },
-    {
-      label: 'Transport',
-      submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+Shift+P'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+S'},
-        { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+Shift+Numadd'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+Shift+Numsub'}
-      ]
-    },
-    {
-      label: 'MIDI',
-      submenu: [
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Devices',accelerator: 'CommandOrControl+M'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+>'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+<'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Output',accelerator: 'CommandOrControl+Shift+Option+>'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Output',accelerator: 'CommandOrControl+Shift+Option+<'},
-
-        { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Send'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Recieve'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Type'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Source'},
-        { type: 'separator' },
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Send'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Recieve'},
-      ]
-    },
+    // {
+    //   label: 'Transport',
+    //   submenu: [
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Play Pause',accelerator: 'CommandOrControl+Shift+P'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Stop',accelerator: 'CommandOrControl+Shift+S'},
+    //     { type: 'separator' },
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Up',accelerator: 'CommandOrControl+Shift+Numadd'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Tempo Down',accelerator: 'CommandOrControl+Shift+Numsub'}
+    //   ]
+    // },
+    // {
+    //   label: 'MIDI',
+    //   submenu: [
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Devices',accelerator: 'CommandOrControl+M'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+>'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+<'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Output',accelerator: 'CommandOrControl+Shift+Option+>'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Output',accelerator: 'CommandOrControl+Shift+Option+<'},
+    //
+    //     { type: 'separator' },
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Send'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Recieve'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Type'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Source'},
+    //     { type: 'separator' },
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Send'},
+    //     {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Transport Recieve'},
+    //   ]
+    // },
     // { role: 'windowMenu' }
     {
       label: 'Window',

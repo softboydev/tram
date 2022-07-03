@@ -194,3 +194,6 @@ b{
     padding: 0;
   }
 }
+.header,.footer{
+  pointer-events: none;
+}
