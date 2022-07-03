@@ -1,6 +1,6 @@
 {
   "name": "TRAM",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "description": "TRAM is short for Typographic Rythm Automation Machine. TRAM is a general purpose midi controller.",
   "main": "main.js",
   "scripts": {
@@ -17,9 +17,6 @@
     "electron": "^11.3.0",
     "electron-installer-debian": "^3.1.0",
     "electron-packager": "^15.1.0"
-  },
-  "dependencies": {
-    "electron-json-storage": "^4.3.0"
   },
   "config": {
     "forge": "./forge.config.js"

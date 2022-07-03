@@ -1,26 +1,24 @@
 // output.send( [150, 5, 100]);
-
-const storage = require('electron-json-storage');
 const ipc = require('electron').ipcRenderer;
 
 
 /*RUNTIME*/
 window.addEventListener('load',function(){
   const input = document.getElementById('input')
-  window.TRAM = new TRAM(input,ipc,storage)
+  window.TRAM = new TRAM(input,ipc)
 })
 /*DRUMMACHINE*/
-function TRAM(input,ipc,storage){
+function TRAM(input,ipc){
   this.CONFIG = {
     filename: "untitled",
     tempo: 128,
-    clocksend: false,
-    transportsend: false,
+    clocksend: true,
+    transportsend: true,
     clockrecieve: false,
     transportrecieve: false,
     clocktype: false,
     clocksource: false,
-    fontsize: 16,
+    fontsize: 36,
     mappings: {},
     maps: {},
     buffer: [],
@@ -55,37 +53,6 @@ function TRAM(input,ipc,storage){
         document.body.removeChild(a)
         window.URL.revokeObjectURL(url)
     }, 100)
-  }
-  this.update = function(){
-    storage.get("config", function(error, data) {
-      if(error){
-        throw error
-      }
-      else{
-        this.CONFIG = JSON.parse(data)
-        this.EDITOR.innerText = this.CONFIG.input
-        this.setTempo(this.CONFIG.tempo)
-        this.setFontsize(this.CONFIG.fontsize)
-        this.setFilename(this.CONFIG.filename)
-        this.setClockSend(this.CONFIG.clocksend)
-        this.setClockRecieve(this.CONFIG.clockrecieve)
-        this.setTransportSend(this.CONFIG.transportsend)
-        this.setTransportRecieve(this.CONFIG.transportrecieve)
-        this.setClockType(this.CONFIG.clocktype)
-        this.setClockSource(this.CONFIG.clocksource)
-        this.setOperators()
-      }
-    }.bind(this));
-  }
-  this.save = function(){
-    storage.set("config", JSON.stringify(this.CONFIG), function(error) {
-      if (error){
-        throw error
-      }
-      else{
-        // ipc.send("requestUpdate","")
-      }
-    }.bind(this));
   }
   this.connect = function(){
     const open = document.getElementById("uiOpen")
@@ -168,7 +135,6 @@ function TRAM(input,ipc,storage){
   }
   this.init = function(){
     this.connect()
-    this.update()
     function onMIDIFailure(msg) {
       console.log( "Failed to get MIDI access - " + msg );
     }
@@ -320,13 +286,9 @@ function TRAM(input,ipc,storage){
         name = "untitled"
       }
       this.CONFIG.filename = name
-      this.save()
     }.bind(this))
     ipc.on('requireSave', function () {
       this.export()
-    }.bind(this));
-    ipc.on('requireUpdate', function () {
-      this.update()
     }.bind(this));
     ipc.on('requirePlayPause', function () {
       this.playpause()
@@ -463,7 +425,6 @@ function TRAM(input,ipc,storage){
       }
     this.CONFIG.buffer = buffer
     this.setOperators()
-    this.save()
   }
   this.createLoop = function(tempo){
     this.removeLoop()
@@ -505,7 +466,6 @@ function TRAM(input,ipc,storage){
       this.TEMPOCHANGETIMESTAMP = performance.now()
       this.RUNNING = false
       this.CONFIG.tempo = Number(tempo)
-      this.save()
       document.getElementById("tempo").innerText = tempo + "BPM"
       this.createLoop(tempo)
       setTimeout(function () {
@@ -518,7 +478,6 @@ function TRAM(input,ipc,storage){
   this.setFontsize = function(size){
     if(size > 6 && size < 48){
       this.CONFIG.fontsize = Number(size)
-      this.save()
       document.getElementById("fontsize").innerText = size + "PX"
       document.body.style.fontSize = size + "px"
     }
@@ -526,43 +485,43 @@ function TRAM(input,ipc,storage){
   this.setFilename = function(name){
     document.getElementById("filename").innerText = name
     this.CONFIG.filename = name
-    this.save()
   }
   this.setOperators = function(){
     document.getElementById("operators").innerText = Object.keys(this.CONFIG.mappings).map(x => typeof this.CONFIG.mappings[x] != "string" ? x : "").join("")
   }
   this.setClockSend = function(flag){
     this.CONFIG.clocksend = flag
-    this.save()
+
     document.getElementById("clocksend").innerText = flag ? "send" : "nosend"
   }
   this.setClockRecieve = function(flag){
     this.CONFIG.clockrecieve = flag
-    this.save()
+
     document.getElementById("clockrecieve").innerText = flag ? "recieve" : "norecieve"
   }
   this.setTransportSend = function(flag){
     this.CONFIG.transportsend = flag
-    this.save()
+
     document.getElementById("transportsend").innerText = flag ? "send" : "nosend"
   }
   this.setTransportRecieve = function(flag){
     this.CONFIG.transportrecieve = flag
-    this.save()
+
     document.getElementById("transportrecieve").innerText = flag ? "recieve" : "norecieve"
   }
   this.setClockType = function(flag){
     this.CONFIG.clocktype = flag
-    this.save()
+
     this.createLoop(tempo)
     document.getElementById("clocktype").innerText = flag ? "48ppq" : "24ppq"
   }
   this.setClockSource = function(flag){
     this.CONFIG.clocksource = flag
-    this.save()
+
     document.getElementById("clocksource").innerText = flag ? "EXT" : "INT"
   }
   this.previousMidiOutput = function () {
+    // console.log("Previos Midi Output");
     let next = this.SELECTEDOUTPUT - 1
     if(next < 0){
       next = this.OUTPUTS.length - 1
@@ -571,6 +530,7 @@ function TRAM(input,ipc,storage){
     this.setMidiOutput()
   }.bind(this)
   this.nextMidiOutput = function () {
+    // console.log("Next Midi Output");
     let next = this.SELECTEDOUTPUT + 1
     if(next >= this.OUTPUTS.length){
       next = 0
@@ -579,6 +539,7 @@ function TRAM(input,ipc,storage){
     this.setMidiOutput()
   }.bind(this)
   this.previousMidiInput = function () {
+    // console.log("Previos Midi Input");
     let next = this.SELECTEDINPUT - 1
     if(next < 0){
       next = this.INPUTS.length - 1
@@ -587,6 +548,7 @@ function TRAM(input,ipc,storage){
     this.setMidiInput()
   }.bind(this)
   this.nextMidiInput = function () {
+    // console.log("Next Midi Input");
     let next = this.SELECTEDINPUT + 1
     if(next >= this.INPUTS.length){
       next = 0

@@ -3,7 +3,6 @@
 const {app, BrowserWindow, Menu, ipcMain, dialog} = require('electron')
 const path = require('path')
 const fs = require('fs'); // Load the File System to execute our common tasks (CRUD)
-const storage = require('electron-json-storage');
 app.allowRendererProcessReuse = false
 let mainWindow
 
@@ -14,64 +13,11 @@ function isNotEmptyObject(obj){
 ipcMain.on('requestUpdate', (event) => {
     requireUpdate()
 })
-ipcMain.on('requireOpen', (event) => {
-    openFile()
-})
 function requireUpdate(){
   mainWindow.webContents.send("requireUpdate");
 }
-function checkForEmptyStorage(){
-  storage.get("config", function(error, data) {
-    if(error){
-      throw error
-    }
-    else if(!isNotEmptyObject(data)){
-      resetStorage()
-    }
-  })
-  function isNotEmptyObject(obj){
-    return !(obj && Object.keys(obj).length === 0 && obj.constructor === Object)
-  }
-}
-function resetStorage(){
-  let data = ""
-  storage.set("config", data, function(error) {
-    if (error){
-      throw error
-    }
-    else{
-      requireUpdate()
-    }
-  })
-}
 function requireAction(sender){
   mainWindow.webContents.send("require" + sender.label.replace(/ /g, ''));
-}
-
-function openFile(){
-  dialog.showOpenDialog(mainWindow, {
-    properties: ['openFile']
-  }).then(result => {
-    if(!result.canceled && result.filePaths.length > 0){
-      let filepath = result.filePaths[0]
-      fs.readFile(filepath, 'utf-8', (err, data) => {
-        if(err){
-            alert("An error ocurred reading the file :" + err.message);
-            return;
-        }
-        else{
-          storage.set("config", data, function(error) {
-            if (error){
-              console.log("Error storing JSON " + error)
-            }
-            else{
-              requireAction({label:"Update"})
-            }
-          })
-        }
-      })
-    }
-  })
 }
 
 
@@ -187,8 +133,8 @@ function createMenu(){
         {  click (s){requireAction(s);}, type: 'normal', label: 'Refresh Midi Devices',accelerator: 'CommandOrControl+M'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+>'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+<'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Input',accelerator: 'CommandOrControl+Shift+Option+>'},
-        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Input',accelerator: 'CommandOrControl+Shift+Option+<'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Next Midi Output',accelerator: 'CommandOrControl+Shift+Option+>'},
+        {  click (s){requireAction(s);}, type: 'normal', label: 'Previous Midi Output',accelerator: 'CommandOrControl+Shift+Option+<'},
 
         { type: 'separator' },
         {  click (s){requireAction(s);}, type: 'normal', label: 'Toggle Clock Send'},
@@ -227,7 +173,6 @@ function createMenu(){
 }
 
 app.whenReady().then(() => {
-  checkForEmptyStorage()
   createMenu()
   createWindow()
   app.on('activate', function () {
