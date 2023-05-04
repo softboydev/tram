@@ -458,6 +458,30 @@ function TRAM(input,ipc,storage){
             }
             r++
           }
+          //split buffer into chunks of up to 16 symbols
+          let bars = []
+          while(symbols.length){
+            if(symbols.length > 16){
+              bars.push(symbols.splice(0, 16))
+            }
+            else{
+              bars.push(symbols)
+              symbols = false
+            }
+          }
+          symbols = []
+          while(bars.length){
+            let bar = ["","","","","","","","","","","","","","","",""]
+            let b = bars.splice(0,1)[0]
+            let m = 16 / b.length
+            let n = 0
+            while(b.length){
+              let c = b.splice(0,1)[0]
+              bar[Math.floor(m*n)] = c
+              n++
+            }
+            symbols = symbols.concat(bar)
+          }
           buffer.push(symbols)
         }
       }
