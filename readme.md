@@ -87,7 +87,7 @@ The mapping needs to follow a certain convention. The part behind the `=` will b
 
 - empty space
 
--  commata
+- commata
 - dot
 - minus
 - vertical line
@@ -105,6 +105,8 @@ You may use shorthands. By typing a number between 1 and 16 as the midi message 
 Note off commands are sent automatically whenever you send a note on command. The note off command is sent right before the note on command. You can send additional note off commands manually, for example when you want a note to be held short then until the next note.
 
 You can find some default mappings in the `/defaults` folder of the git repo.
+
+With version 1.2 comes a new way of mapping characters. By opening the mapping editor from `Window>Mapping` you can now map characters using a graphic user interface. Mappings done from the terminal will still override these mapping. This behavior can be turned of in the `Preferences` window.
 
 ### Programming
 
