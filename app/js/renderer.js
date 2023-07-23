@@ -22,11 +22,15 @@ function TRAM(input,ipc,storage){
     clocksource: false,
     fontsize: 16,
     mappings: {},
-    maps: {},
     buffer: [],
     input: "",
     mapInput: ""
   }
+  this.MAPPING = {
+    input: "",
+    mappings: {}
+  }
+  this.OPERATORS = {}
   this.NOTES = "CcDdEFfGgAaH"
   this.EDITOR = input
   this.OUTPUTS = []
@@ -74,8 +78,23 @@ function TRAM(input,ipc,storage){
         this.setClockType(this.CONFIG.clocktype)
         this.setClockSource(this.CONFIG.clocksource)
         this.setOperators()
+        storage.get("mapping", function(error, data) {
+          if(error){
+            throw error
+          }
+          else{
+            this.MAPPING = JSON.parse(data)
+            this.updateOperators()
+          }
+        }.bind(this));
       }
     }.bind(this));
+  }
+  this.updateOperators = function(){
+    this.OPERATORS = {
+        ...this.CONFIG.mappings,
+        ...this.MAPPING.mappings
+    }
   }
   this.save = function(){
     storage.set("config", JSON.stringify(this.CONFIG), function(error) {
@@ -401,9 +420,9 @@ function TRAM(input,ipc,storage){
       if(input[line][0] == "#"){
         //comment
       }
-      else if(input[line].includes("=")){ //mapping
-        let splitted = input[line].join("").split("=")
-        let midi = splitted[1].split(/:| |,|\.|\-|\|/)
+      else if(input[line].includes(" ")){ //mapping
+        let splitted = input[line].join("").split(" ")
+        let midi = splitted[1].split(/:|,|\.|\-|\|/)
         if(midi.length == 3){
           midi[0] = isNaN(Number(midi[0])) ? 1 : Number(midi[0])
           if(midi[0] < 128){
@@ -424,12 +443,10 @@ function TRAM(input,ipc,storage){
         }
         else{
           this.CONFIG.mappings[splitted[0]] = splitted[1]
+          this.updateOperators()
         }
       }
       else if(input[line].length){ //symbols
-        if(input[line].includes(" ")){ //remove spaces when words are used
-          input[line] = input[line].join("").split(" ")
-        }
         let symbols = input[line]
         let allAtomic = false
         let r = 0 //recursion counter
@@ -439,10 +456,10 @@ function TRAM(input,ipc,storage){
           let sMax = symbols.length
           for(let s = sMax - 1; s >= 0; s--){
             let symbol = symbols[s]
-              if(this.CONFIG.mappings[symbol]){ //when the symbol can be mapped
-                if(typeof this.CONFIG.mappings[symbol] == "string"){ //when the symbol is not atomic
+              if(this.OPERATORS[symbol]){ //when the symbol can be mapped
+                if(typeof this.OPERATORS[symbol] == "string"){ //when the symbol is not atomic
                   if(r != lastR){ //when not in last round of recursion
-                    let sub = this.CONFIG.mappings[symbol] //store a sub array
+                    let sub = this.OPERATORS[symbol] //store a sub array
                     sub = sub.includes(" ") ? sub.split(" ") : sub.split("") //when the subarray contains words
                     symbols.splice(s, 1, ...sub) //insert the subarray into the main array
                     allAtomic = false //reset the flag
@@ -622,14 +639,15 @@ function TRAM(input,ipc,storage){
     if(this.OUTPUT.send){
       for(let line of this.CONFIG.buffer){
         let p = this.POSITION % line.length
-        if(line[p] && this.CONFIG.mappings[line[p]]){
-          this.send(this.CONFIG.mappings[line[p]],delta)
+        if(line[p] && this.OPERATORS[line[p]]){
+          this.send(this.OPERATORS[line[p]],delta)
         }
       }
     }
   }
   this.send = function(cmd,delta){
     let func = cmd[0]
+    console.log(cmd);
     if(143 < func && func < 160){ //if note on should be sent
       this.OUTPUT.send([func - 16,cmd[1],cmd[2]]) //send note off on same channel beforehands
     }

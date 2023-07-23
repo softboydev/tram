@@ -62,6 +62,12 @@ b{
   text-align: left;
   text-transform: none;
 }
+.mapping #input{
+  top: 1em;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: calc(100% - 2em);
+}
 #help{
   display: none;
   pointer-events: none;
@@ -168,7 +174,8 @@ b{
   color: #ffffff;
 }
 #operators{
-  color: #ffffff
+  color: #ffffff;
+  display: none;
 }
 #filename{
   min-width: 12px;
