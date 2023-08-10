@@ -1,0 +1,23 @@
+- extra mapping Window with ui, override from terminal input
+- extra terminal window with no ui
+- send osc
+- syntax highlighting
+- more default mappings
+- special characters
+# comment
+| manual bar split
+/ manual part split
+[] XOX Style sequence
+() unquantized sequence
+"" multiline bar with . and , as split
+
+- sylable mapping
+- preferences window
+toggle terminal override
+toggle shortcuts
+colors
+prefered sequencer style
+toggle special characters
+
+- code refactoring
+- react for ui
