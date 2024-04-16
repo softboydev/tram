@@ -1,0 +1,247 @@
+@font-face {
+    font-family: "Monospace";
+    font-weight: 400;
+    src: url("./fonts/Roboto_Mono/static/RobotoMono-Regular.ttf");
+}
+@font-face {
+    font-family: "Monospace";
+    font-weight: 700;
+    src: url("./fonts/Roboto_Mono/static/RobotoMono-Bold.ttf");
+}
+*{
+  font-family: "Monospace",monospace;
+  font-weight: 400;
+  outline: none;
+  border: 0;
+}
+html,body{
+  background: black;
+  color: #cccccc;
+  line-height: 1em;
+  font-family: "Monospace",monospace;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+}
+body{
+  font-size: 16px;
+}
+b{
+  color: white;
+}
+::selection{
+  background: black !important;
+  color: #ffffff !important;
+}
+.container{
+  position: fixed;
+  top: 1em;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: calc(100% - 2em);
+}
+#input,
+#help{
+  font-family: "Monospace",monospace !important;
+  color: #cccccc;
+  font-size: 1em;
+  line-height: 1.5em;
+  margin: 0;
+  width: 100%;
+  height: calc(100% - 7em);
+  position: absolute;
+  top: 2.4em;
+  left: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  overflow: hidden;
+  overflow-y: auto;
+  text-align: left;
+}
+#input *{
+  font-family: "Monospace",monospace !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  color: #cccccc !important;
+  font-size: 1em !important;
+  line-height: 1.5em !important;
+  border: 0 !important;
+  background: transparent !important;
+  outline: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+.mapping #input,
+.terminal #input{
+  top: 3em;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: calc(100% - 4em);
+}
+.mapping #info,
+.terminal #info{
+  position: fixed;
+  top: 1em;
+  left: 2em;
+  width: calc(100% - 4em);
+  height: 1em;
+  font-size: 1em;
+  color: #aaaaaa !important;
+  user-select: none;
+}
+#help{
+  display: none;
+  pointer-events: none;
+  z-index: 2;
+  background: black;
+}
+#help.is-active{
+  display: block;
+}
+#input span{
+  font-family: "Monospace",monospace !important;
+}
+.header{
+  font-size: 1em;
+  line-height: 1.2em;
+  margin: 0;
+  width: 100%;
+  height: 1em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* overflow: hidden; */
+  user-select: none;
+  /* pointer-events: none; */
+}
+.header .left{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: black;
+  padding-right: 1em;
+}
+.header .center{
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: black;
+  padding: 0 1em;
+}
+.header .right{
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: black;
+  padding-left: 1em;
+  text-align: right;
+}
+#transport{
+  margin-left: 0.4em;
+  transform: translateY(0.05em);
+  width: 0.8em;
+  height: 0.8em;
+  background-image: url("./img/play.png");
+  background-size: contain;
+  background-position: center;
+  display: inline-block;
+}
+.running #transport{
+  background-image: url("./img/pause.png");
+}
+.stopped #transport{
+  background: red;
+  background-image: url("./img/stop.png");
+}
+.footer{
+  line-height: 1.2em;
+  width: 100%;
+  height: 1em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* overflow: hidden; */
+  user-select: none;
+  /* pointer-events: none; */
+}
+.footer .left{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background: black;
+  padding-right: 1em;
+  min-width: 300px;
+}
+.footer .center{
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: black;
+  padding: 0 1em;
+}
+.footer .right{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: black;
+  padding-left: 1em;
+  text-align: right;
+}
+#output{
+  color: #ffffff;
+}
+#tempo{
+  color: #ffffff;
+}
+#operators{
+  color: #ffffff;
+  display: none;
+}
+#filename{
+  min-width: 12px;
+  display: inline-block;
+  color: #ffffff;
+}
+.shortcut{
+  color: #888888;
+}
+#mappingflag{
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  user-select: none;
+}
+@media (max-width: 912px){
+  .shortcut,
+  .detail,
+  .header .center,
+  .ui-break{
+    display: none;
+  }
+  .footer .center{
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    bottom: auto;
+    transform: none;
+    padding: 0;
+  }
+}
+.ui-hidden .footer,
+.ui-hidden .header{
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.ui-hidden #input,
+.ui-hidden #help{
+  height: 100%;
+  top: 0;
+}
