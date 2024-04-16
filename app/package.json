@@ -1,27 +1,26 @@
 {
   "name": "TRAM",
-  "version": "0.2.0",
+  "productName": "TRAM",
+  "version": "0.3.0",
   "description": "TRAM is short for Typographic Rythm Automation Machine. TRAM is a general purpose midi controller.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build_osx": "electron-packager . TRAM --platform=darwin --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.icns ; echo 'Built for OSX'",
-    "build_linux": "electron-packager . TRAM --platform=linux  --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.ico ; echo 'Built for LINUX'",
-    "build_win": "electron-packager . TRAM --platform=win32  --arch=x64 --out ~/Documents/TRAM --overwrite --icon=icon.ico ; echo 'Built for WIN'"
+    "build_osx": "electron-packager . TRAM --platform=darwin --arch=x64 --out ../builds --overwrite --icon=icon.icns ; echo 'Built for OSX'",
+    "build_linux": "electron-packager . TRAM --platform=linux  --arch=x64 --out ../builds --overwrite --icon=icon.ico ; echo 'Built for LINUX'",
+    "build_win": "electron-packager . TRAM --platform=win32  --arch=x64 --out ../builds --overwrite --icon=icon.ico ; echo 'Built for WIN'",
+    "build_all": "electron-packager . TRAM --platform=darwin --arch=x64 --out ../builds --overwrite --icon=icon.icns ; electron-packager . TRAM --platform=win32  --arch=x64 --out ../builds --overwrite --icon=icon.ico ; echo 'Built for all OS'"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/softboydev/tram",
   "keywords": [],
   "author": "Johannes Hassenstein",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^11.3.0",
     "electron-installer-debian": "^3.1.0",
-    "electron-packager": "^15.1.0"
+    "electron-packager": "^16.0.0"
   },
   "dependencies": {
     "electron-json-storage": "^4.3.0"
-  },
-  "config": {
-    "forge": "./forge.config.js"
   }
 }

@@ -2,9 +2,6 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
     <title>TRAM</title>
     <link rel="stylesheet" href="./css/styles.css">
   </head>
@@ -12,10 +9,10 @@
     <div class='container'>
       <header class='header'>
         <span class='left'>
-          <span class='shortcut'>[<span id="uiOpen">O</span>/<span id="uiSave">S</span>]</span>
+          <span class='shortcut'>[<span id="uiOpen">O</span>/<span id="uiSave">S</span>] [<span id="uiHelp">?</span>]</span>
         </span>
         <span class="center">
-          <span class='shortcut'>[<span id="uiHelp">?</span>]</span> <b>TRAM</b> <span id="operators"></span> <span class='shortcut'>[<span id="uiOut">O</span>/<span id="uiIn">I</span>]</span> <span id="fontsize" class="detail">16PX</span>
+          <span class='shortcut'></span> [<span id="terminalmode">Terminal:All</span>] <b>TRAM</b> <span id="operators"></span> <span class='shortcut'>[<span id="uiOut">-</span>/<span id="uiIn">+</span>]</span> <span id="fontsize" class="detail">16PX</span>
         </span>
         <span class="right">
           <span class='shortcut'>transport</span> <span id="transportsend" class="detail">send</span> <span id="transportrecieve" class="detail">recieve</span><br class="ui-break">
@@ -27,8 +24,8 @@
       <footer class='footer'>
         <span class="left">
           MIDI IO [<span id="uiMidi">M</span>]<br>
-          I <span id="inputs">No Device [0/0]</span> <span class='shortcut'>[<span id="uiInPrev">&lt;</span>\<span id="uiInNext">&gt;</span>]</span><br>
-          O <span id="outputs">No Device [0/0]</span> <span class='shortcut'>[<span id="uiOutPrev">&lt;</span>\<span id="uiOutNext">&gt;</span>]</span>
+          I <span id="inputs">No Device (0/0)</span> <span class='shortcut'>[<span id="uiInPrev">&lt;</span>\<span id="uiInNext">&gt;</span>]</span><br>
+          O <span id="outputs">No Device (0/0)</span> <span class='shortcut'>[<span id="uiOutPrev">&lt;</span>\<span id="uiOutNext">&gt;</span>]</span>
         </span>
         <span class="center">
           [<span id="filename" contenteditable spellcheck="false">untitled</span>.tram]

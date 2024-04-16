@@ -20,11 +20,11 @@ function TRAM(input,ipc,storage){
     transportrecieve: false,
     clocktype: false,
     clocksource: false,
+    terminal: 0, //0 no mapping, 1 only remapping, 2 all
     fontsize: 16,
     mappings: {},
     buffer: [],
-    input: "",
-    mapInput: ""
+    input: ""
   }
   this.MAPPING = {
     input: "",
@@ -47,7 +47,7 @@ function TRAM(input,ipc,storage){
   this.STOPPED = false
   this.TEMPOCHANGETIMESTAMP = performance.now()
   this.export = function(){
-    let blob = new Blob([JSON.stringify(this.CONFIG)], {type: 'text/plain'})
+    let blob = new Blob([JSON.stringify({config:this.CONFIG,mapping:this.MAPPING})], {type: 'text/plain'})
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.style.display = 'none'
@@ -68,8 +68,8 @@ function TRAM(input,ipc,storage){
       else{
         this.CONFIG = JSON.parse(data)
         this.EDITOR.innerText = this.CONFIG.input
-        this.setTempo(this.CONFIG.tempo)
         this.setFontsize(this.CONFIG.fontsize)
+        this.setTempo(this.CONFIG.tempo)
         this.setFilename(this.CONFIG.filename)
         this.setClockSend(this.CONFIG.clocksend)
         this.setClockRecieve(this.CONFIG.clockrecieve)
@@ -77,14 +77,17 @@ function TRAM(input,ipc,storage){
         this.setTransportRecieve(this.CONFIG.transportrecieve)
         this.setClockType(this.CONFIG.clocktype)
         this.setClockSource(this.CONFIG.clocksource)
+        this.setTerminalMode(this.CONFIG.terminal)
         this.setOperators()
         storage.get("mapping", function(error, data) {
           if(error){
             throw error
           }
           else{
+            data = data ? data : "{}"
             this.MAPPING = JSON.parse(data)
             this.updateOperators()
+            this.refresh()
           }
         }.bind(this));
       }
@@ -100,9 +103,6 @@ function TRAM(input,ipc,storage){
     storage.set("config", JSON.stringify(this.CONFIG), function(error) {
       if (error){
         throw error
-      }
-      else{
-        // ipc.send("requestUpdate","")
       }
     }.bind(this));
   }
@@ -126,6 +126,7 @@ function TRAM(input,ipc,storage){
     const clockSource = document.getElementById("clocksource")
     const clockSend = document.getElementById("clocksend")
     const clockRecieve = document.getElementById("clockrecieve")
+    const terminalMode = document.getElementById("terminalmode")
     open.addEventListener("click",function(){
       ipc.send("requireOpen","")
     })
@@ -164,6 +165,9 @@ function TRAM(input,ipc,storage){
     }.bind(this))
     outNext.addEventListener("click",function(){
       this.nextMidiOutput()
+    }.bind(this))
+    terminalMode.addEventListener("click",function(){
+      this.setTerminalMode(this.CONFIG.terminal + 1)
     }.bind(this))
     slower.addEventListener("click",function(){
       this.setTempo(this.CONFIG.tempo - 1)
@@ -251,7 +255,6 @@ function TRAM(input,ipc,storage){
     switch(fb){
       case 248: //start/play from stop
         if(this.CONFIG.clockrecieve){
-          console.log("clock");
           this.CLOCK()
         }
         break
@@ -333,32 +336,8 @@ function TRAM(input,ipc,storage){
       e.preventDefault()
       this.refresh()
     }.bind(this))
-    document.getElementById('filename').addEventListener('input',function(e){
-      let name = e.target.innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase()
-      if(name.length == 0){
-        name = "untitled"
-      }
-      this.CONFIG.filename = name
-      this.save()
-    }.bind(this))
-    ipc.on('requireSave', function () {
-      this.export()
-    }.bind(this));
-    ipc.on('requireUpdate', function () {
-      this.update()
-    }.bind(this));
-    ipc.on('requirePlayPause', function () {
-      this.playpause()
-    }.bind(this));
-    ipc.on('requireStop', function () {
-      this.STOPPED = true
-      this.stop()
-    }.bind(this));
-    ipc.on('requireTempoUp', function () {
-      this.setTempo(this.CONFIG.tempo + 1)
-    }.bind(this));
-    ipc.on('requireTempoDown', function () {
-      this.setTempo(this.CONFIG.tempo - 1)
+    ipc.on('requireToggleUI', function () {
+      document.body.classList.toggle("ui-hidden")
     }.bind(this));
     ipc.on('requireZoomIn', function () {
       this.setFontsize(this.CONFIG.fontsize + 1)
@@ -366,116 +345,186 @@ function TRAM(input,ipc,storage){
     ipc.on('requireZoomOut', function () {
       this.setFontsize(this.CONFIG.fontsize - 1)
     }.bind(this));
-    ipc.on('requireToggleClockSend', function () {
-      this.setClockSend(!this.CONFIG.clocksend)
+    ipc.on('requireUpdate', function () {
+      this.update()
     }.bind(this));
-    ipc.on('requireToggleClockRecieve', function () {
-      this.setClockRecieve(!this.CONFIG.clockrecieve)
-    }.bind(this));
-    ipc.on('requireToggleTransportSend', function () {
-      this.setTransportSend(!this.CONFIG.transportsend)
-    }.bind(this));
-    ipc.on('requireToggleTransportRecieve', function () {
-      this.setTransportRecieve(!this.CONFIG.transportrecieve)
-    }.bind(this));
-    ipc.on('requireToggleClockType', function () {
-      this.setClockType(!this.CONFIG.clocktype)
-      this.createLoop()
-    }.bind(this));
-    ipc.on('requireToggleClockSource', function () {
-      this.setClockSource(!this.CONFIG.clocksource)
-    }.bind(this));
-    ipc.on('requireSweepMidi', function () {
-      this.sweep()
-    }.bind(this));
-    ipc.on('requirePreviousMidiOutput', function () {
-      this.previousMidiOutput()
-    }.bind(this));
-    ipc.on('requireNextMidiOutput', function () {
-      this.nextMidiOutput()
-    }.bind(this));
-    ipc.on('requirePreviousMidiInput', function () {
-      this.previousMidiInput()
-    }.bind(this));
-    ipc.on('requireNextMidiInput', function () {
-      this.nextMidiInput()
-    }.bind(this));
-    ipc.on('requireRefreshMidiDevices', function () {
-      this.refreshMidiOutputs()
-    }.bind(this));
-    ipc.on('requireHelp', function () {
-      this.toggleHelp()
-    }.bind(this));
-    this.createLoop(this.CONFIG.tempo)
-    this.start()
-    document.body.classList.add("running")
+      document.getElementById('filename').addEventListener('input',function(e){
+        let name = e.target.innerText.replace(/ /g, '').replace(/\n/g, '').toLowerCase()
+        if(name.length == 0){
+          name = "untitled"
+        }
+        this.CONFIG.filename = name
+        this.save()
+      }.bind(this))
+      ipc.on('requireSave', function () {
+        this.export()
+      }.bind(this));
+
+      ipc.on('requirePlayPause', function () {
+        this.playpause()
+      }.bind(this));
+      ipc.on('requireStop', function () {
+        this.STOPPED = true
+        this.stop()
+      }.bind(this));
+      ipc.on('requireTempoUp', function () {
+        this.setTempo(this.CONFIG.tempo + 1)
+      }.bind(this));
+      ipc.on('requireTempoDown', function () {
+        this.setTempo(this.CONFIG.tempo - 1)
+      }.bind(this));
+      ipc.on('requireToggleClockSend', function () {
+        this.setClockSend(!this.CONFIG.clocksend)
+      }.bind(this));
+      ipc.on('requireToggleClockRecieve', function () {
+        this.setClockRecieve(!this.CONFIG.clockrecieve)
+      }.bind(this));
+      ipc.on('requireToggleTransportSend', function () {
+        this.setTransportSend(!this.CONFIG.transportsend)
+      }.bind(this));
+      ipc.on('requireToggleTransportRecieve', function () {
+        this.setTransportRecieve(!this.CONFIG.transportrecieve)
+      }.bind(this));
+      ipc.on('requireToggleClockType', function () {
+        this.setClockType(!this.CONFIG.clocktype)
+        this.createLoop()
+      }.bind(this));
+      ipc.on('requireToggleClockSource', function () {
+        this.setClockSource(!this.CONFIG.clocksource)
+      }.bind(this));
+      ipc.on('requireSweepMidi', function () {
+        this.sweep()
+      }.bind(this));
+      ipc.on('requirePreviousMidiOutput', function () {
+        this.previousMidiOutput()
+      }.bind(this));
+      ipc.on('requireNextMidiOutput', function () {
+        this.nextMidiOutput()
+      }.bind(this));
+      ipc.on('requirePreviousMidiInput', function () {
+        this.previousMidiInput()
+      }.bind(this));
+      ipc.on('requireNextMidiInput', function () {
+        this.nextMidiInput()
+      }.bind(this));
+      ipc.on('requireRefreshMidiDevices', function () {
+        this.refreshMidiOutputs()
+      }.bind(this));
+      ipc.on('requireHelp', function () {
+        this.toggleHelp()
+      }.bind(this));
+      ipc.on('requireSetTerminalModeToNone', function () {
+        this.setTerminalMode(0)
+      }.bind(this));
+      ipc.on('requireSetTerminalModeToWords', function () {
+        this.setTerminalMode(1)
+      }.bind(this));
+      ipc.on('requireSetTerminalModeToAll', function () {
+        this.setTerminalMode(2)
+      }.bind(this));
+      this.createLoop(this.CONFIG.tempo)
+      this.start()
+      document.body.classList.add("running")
   }.bind(this)
   this.refresh = function(){
     this.CONFIG.buffer = []
     this.CONFIG.mappings = {}
     this.CONFIG.input = this.EDITOR.innerText
-    let input = this.EDITOR.innerText.split('\n').map(x => x.split(''));
+    this.updateOperators()
+    let input = this.EDITOR.innerText
+    let lines = input.split('\n')
+    let included = []
     let buffer = []
-    for(let line in input){
-      if(input[line][0] == "#"){
+    for(let l in lines){
+      let line = lines[l]
+      let words = line.split(' ')
+      if(line.charAt(0) == "#"){
         //comment
       }
-      else if(input[line].includes(" ")){ //mapping
-        let splitted = input[line].join("").split(" ")
-        let midi = splitted[1].split(/:|,|\.|\-|\|/)
-        if(midi.length == 3){
-          midi[0] = isNaN(Number(midi[0])) ? 1 : Number(midi[0])
-          if(midi[0] < 128){
-            let channel = Math.max(1,Math.min(midi[0],16))
-            midi[0] = channel + 143
+      else{
+        if(words.length > 1 && this.CONFIG.terminal != 0){ //only when there was at least one space character a mapping could happen
+          let operator = words[0] //interpretes the first word as the operator
+          let command = words[1] //interpretes the second one as the command
+          let midi = command.split(/:|,|\.|\-|\|/) //tries to cast the command to midi
+          let validMidi = midi.length == 3
+          if(!this.OPERATORS[operator]){ //only if the word hasnt been mapped yet
+            if(validMidi && this.CONFIG.terminal == 2){ //when the cast to midi was successfull
+              midi[0] = isNaN(Number(midi[0])) ? 1 : Number(midi[0])
+              if(midi[0] < 128){
+                let channel = Math.max(1,Math.min(midi[0],16))
+                midi[0] = channel + 143
+              }
+              if(isNaN(Number(midi[1]))){
+                let n = midi[1].split("")
+                let note = this.NOTES.indexOf(n[0]) ? this.NOTES.indexOf(n[0]) : 0
+                let octave = Number(n[1]) >= 0 && n[1] <= 9 ? Number(n[1]) * 12 : 48
+                midi[1] = octave + note
+              }
+              else{
+                midi[1] = Number(midi[1])
+              }
+              midi[2] = isNaN(Number(midi[2])) ? 100 : Number(midi[2])
+              this.CONFIG.mappings[operator] = midi
+
+
+              this.updateOperators()
+              words.splice(0,2) //removes the mapped words from the word array
+            }
+            else if(!validMidi){ //store a mapping
+              this.CONFIG.mappings[operator] = command
+              this.updateOperators()
+              words.splice(0,2) //removes the mapped words from the word array
+            }
+
           }
-          if(isNaN(Number(midi[1]))){
-            let n = midi[1].split("")
-            let note = this.NOTES.indexOf(n[0]) ? this.NOTES.indexOf(n[0]) : 0
-            let octave = Number(n[1]) >= 0 && n[1] <= 9 ? Number(n[1]) * 12 : 48
-            midi[1] = octave + note
-          }
-          else{
-            midi[1] = Number(midi[1])
-          }
-          midi[2] = isNaN(Number(midi[2])) ? 100 : Number(midi[2])
-          this.CONFIG.mappings[splitted[0]] = midi
         }
-        else{
-          this.CONFIG.mappings[splitted[0]] = splitted[1]
-          this.updateOperators()
-        }
-      }
-      else if(input[line].length){ //symbols
-        let symbols = input[line]
-        let allAtomic = false
-        let r = 0 //recursion counter
-        let lastR = 10
-        while(!allAtomic && r <= lastR){
-          allAtomic = true
-          let sMax = symbols.length
-          for(let s = sMax - 1; s >= 0; s--){
-            let symbol = symbols[s]
-              if(this.OPERATORS[symbol]){ //when the symbol can be mapped
-                if(typeof this.OPERATORS[symbol] == "string"){ //when the symbol is not atomic
-                  if(r != lastR){ //when not in last round of recursion
-                    let sub = this.OPERATORS[symbol] //store a sub array
-                    sub = sub.includes(" ") ? sub.split(" ") : sub.split("") //when the subarray contains words
-                    symbols.splice(s, 1, ...sub) //insert the subarray into the main array
-                    allAtomic = false //reset the flag
-                  }
-                  else{ //when in last round of recursion
-                    symbols.splice(s, 1);
-                  }
+        let allops = Object.keys(this.OPERATORS).sort((a, b) => {
+          if (a.length < b.length) {
+            return 1;
+          }
+          if (a.length > b.length) {
+            return -1;
+          }
+          return 0;
+        });
+        if(words.length > 0){ //if there are still words left to map
+          let lastR = 10
+          let r = 0
+          let array
+          while(r <= lastR){
+            array = []
+            for(let w in words){
+              let word = words[w]
+              let found = false
+              for(let operator of allops){ //iterate over all operators
+                if(word.includes(operator)){ //when the word includes an operator
+                  found = true
+                  let command = this.OPERATORS[operator]
+                  // if(r != lastR){
+                    let b = word.slice(0,word.indexOf(operator))
+                    let a = word.slice(word.indexOf(operator)+operator.length)
+                    word = []
+                    if(b){
+                      array.push(...b.split(""))
+                    }
+                    array.push(typeof command == "string" ? command : operator)
+                    if(a){
+                      array.push(...a.split(""))
+                    }
+                  // }
+                  // else{
+                    // array.push(...word.split(""))
+                  // }
                 }
               }
-              else{ //when the symbol cant be mapped
-                symbols[s] = "" //insert an empty string into array
+              if(!found){
+                array.push(...word.split(""))
               }
             }
+            words = array
             r++
           }
-          //split buffer into chunks of up to 16 symbols
+          let symbols = words
           let bars = []
           while(symbols.length){
             if(symbols.length > 16){
@@ -486,7 +535,7 @@ function TRAM(input,ipc,storage){
               symbols = false
             }
           }
-          symbols = []
+          symbols = words
           while(bars.length){
             let bar = ["","","","","","","","","","","","","","","",""]
             let b = bars.splice(0,1)[0]
@@ -502,8 +551,13 @@ function TRAM(input,ipc,storage){
           buffer.push(symbols)
         }
       }
+      this.updateOperators()
+    }
     this.CONFIG.buffer = buffer
-    this.setOperators()
+    if(this.CONFIG.terminal != 0){
+      this.updateOperators()
+      this.setOperators()
+    }
     this.save()
   }
   this.createLoop = function(tempo){
@@ -567,6 +621,12 @@ function TRAM(input,ipc,storage){
   this.setFilename = function(name){
     document.getElementById("filename").innerText = name
     this.CONFIG.filename = name
+    this.save()
+  }
+  this.setTerminalMode = function(mode){
+    mode = mode % 3
+    document.getElementById("terminalmode").innerText = ["Terminal:None","Terminal:Words","Terminal:All"][mode]
+    this.CONFIG.terminal = mode
     this.save()
   }
   this.setOperators = function(){
@@ -647,7 +707,6 @@ function TRAM(input,ipc,storage){
   }
   this.send = function(cmd,delta){
     let func = cmd[0]
-    console.log(cmd);
     if(143 < func && func < 160){ //if note on should be sent
       this.OUTPUT.send([func - 16,cmd[1],cmd[2]]) //send note off on same channel beforehands
     }

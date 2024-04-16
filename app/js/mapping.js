@@ -45,7 +45,6 @@ function MAP(input,ipc,storage){
           }
           else{
             this.MAPPING = JSON.parse(data)
-            console.log(this.MAPPING);
             this.EDITOR.innerText = this.MAPPING.input
           }
         }.bind(this));
@@ -68,6 +67,18 @@ function MAP(input,ipc,storage){
       e.preventDefault()
       this.refresh()
     }.bind(this))
+    ipc.on('requireZoomIn', function () {
+      this.setFontsize(this.CONFIG.fontsize + 1)
+    }.bind(this));
+    ipc.on('requireZoomOut', function () {
+      this.setFontsize(this.CONFIG.fontsize - 1)
+    }.bind(this));
+    ipc.on('requireZoomOut', function () {
+      this.setFontsize(this.CONFIG.fontsize - 1)
+    }.bind(this));
+    ipc.on('requireUpdate', function () {
+      this.update()
+    }.bind(this));
   }
   this.setFontsize = function(size){
     this.CONFIG.fontsize = Number(size)
