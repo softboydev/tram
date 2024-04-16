@@ -50,9 +50,9 @@ b{
   line-height: 1.5em;
   margin: 0;
   width: 100%;
-  height: calc(100% - 5em);
+  height: calc(100% - 7em);
   position: absolute;
-  top: 2em;
+  top: 2.4em;
   left: 0;
   border: 0;
   background: transparent;
@@ -60,7 +60,38 @@ b{
   overflow: hidden;
   overflow-y: auto;
   text-align: left;
-  text-transform: none;
+}
+#input *{
+  font-family: "Monospace",monospace !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  color: #cccccc !important;
+  font-size: 1em !important;
+  line-height: 1.5em !important;
+  border: 0 !important;
+  background: transparent !important;
+  outline: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+.mapping #input,
+.terminal #input{
+  top: 3em;
+  left: 1em;
+  width: calc(100% - 2em);
+  height: calc(100% - 4em);
+}
+.mapping #info,
+.terminal #info{
+  position: fixed;
+  top: 1em;
+  left: 2em;
+  width: calc(100% - 4em);
+  height: 1em;
+  font-size: 1em;
+  color: #aaaaaa !important;
+  user-select: none;
 }
 #help{
   display: none;
@@ -76,7 +107,7 @@ b{
 }
 .header{
   font-size: 1em;
-  line-height: 1em;
+  line-height: 1.2em;
   margin: 0;
   width: 100%;
   height: 1em;
@@ -128,7 +159,7 @@ b{
   background-image: url("./img/stop.png");
 }
 .footer{
-  line-height: 1em;
+  line-height: 1.2em;
   width: 100%;
   height: 1em;
   position: absolute;
@@ -144,6 +175,7 @@ b{
   left: 0;
   background: black;
   padding-right: 1em;
+  min-width: 300px;
 }
 .footer .center{
   position: absolute;
@@ -168,7 +200,8 @@ b{
   color: #ffffff;
 }
 #operators{
-  color: #ffffff
+  color: #ffffff;
+  display: none;
 }
 #filename{
   min-width: 12px;
@@ -177,6 +210,12 @@ b{
 }
 .shortcut{
   color: #888888;
+}
+#mappingflag{
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  user-select: none;
 }
 @media (max-width: 912px){
   .shortcut,
@@ -193,4 +232,16 @@ b{
     transform: none;
     padding: 0;
   }
+}
+.ui-hidden .footer,
+.ui-hidden .header{
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.ui-hidden #input,
+.ui-hidden #help{
+  height: 100%;
+  top: 0;
 }

@@ -1,2 +1,5 @@
 app/node_modules
+builds/**
+builds
 ideas.txt
+todo.txt
