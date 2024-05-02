@@ -13,6 +13,7 @@
   font-weight: 400;
   outline: none;
   border: 0;
+  text-shadow: 0 -0.05em black, 0 0.05em black, 0 -0.1em black, 0 0.1em black, 0.05em -0.05em black, 0.05em 0.05em black, 0.05em -0.1em black, 0.05em 0.1em black, -0.05em -0.05em black, -0.05em 0.05em black, -0.05em -0.1em black, -0.05em 0.1em black, 0.05em -0.05em black, 0.1em 0.05em black, 0.1em -0.1em black, 0.1em 0.1em black, -0.1em -0.05em black, -0.1em 0.05em black, -0.1em -0.1em black, -0.1em 0.1em black;
 }
 html,body{
   background: black;
@@ -24,6 +25,7 @@ html,body{
   width: 100%;
   height: 100%;
   text-transform: uppercase;
+  cursor: crosshair !important;
 }
 body{
   font-size: 16px;
@@ -32,7 +34,6 @@ b{
   color: white;
 }
 ::selection{
-  background: black !important;
   color: #ffffff !important;
 }
 .container{
@@ -41,6 +42,13 @@ b{
   left: 1em;
   width: calc(100% - 2em);
   height: calc(100% - 2em);
+}
+#canvas{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 #input,
 #help{
@@ -97,14 +105,17 @@ b{
   display: none;
   pointer-events: none;
   z-index: 2;
-  background: black;
+  /* background: black; */
 }
 #help.is-active{
   display: block;
 }
-#input span{
-  font-family: "Monospace",monospace !important;
-}
+/* #input span,
+#input div{
+  margin-bottom: 0.4em !important;
+  background: black !important;
+  display: inline !important;
+} */
 .header{
   font-size: 1em;
   line-height: 1.2em;
@@ -122,23 +133,23 @@ b{
   position: absolute;
   top: 0;
   left: 0;
-  background: black;
-  padding-right: 1em;
+  /* background: black; */
+  /* padding-right: 1em; */
 }
 .header .center{
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: black;
-  padding: 0 1em;
+  /* background: black; */
+  /* padding: 0 1em; */
 }
 .header .right{
   position: absolute;
   top: 0;
   right: 0;
-  background: black;
-  padding-left: 1em;
+  /* background: black; */
+  /* padding-left: 1em; */
   text-align: right;
 }
 #transport{
@@ -155,7 +166,7 @@ b{
   background-image: url("./img/pause.png");
 }
 .stopped #transport{
-  background: red;
+  /* background: red; */
   background-image: url("./img/stop.png");
 }
 .footer{
@@ -173,8 +184,8 @@ b{
   position: absolute;
   bottom: 0;
   left: 0;
-  background: black;
-  padding-right: 1em;
+  /* background: black; */
+  /* padding-right: 1em; */
   min-width: 300px;
 }
 .footer .center{
@@ -182,15 +193,15 @@ b{
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: black;
-  padding: 0 1em;
+  /* background: black; */
+  /* padding: 0 1em; */
 }
 .footer .right{
   position: absolute;
   bottom: 0;
   right: 0;
-  background: black;
-  padding-left: 1em;
+  /* background: black; */
+  /* padding-left: 1em; */
   text-align: right;
 }
 #output{

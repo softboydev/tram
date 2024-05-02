@@ -3,12 +3,224 @@
 const storage = require('electron-json-storage');
 const ipc = require('electron').ipcRenderer;
 
-
 /*RUNTIME*/
 window.addEventListener('load',function(){
   const input = document.getElementById('input')
+  window.ACID = new ACID(input)
   window.TRAM = new TRAM(input,ipc,storage)
+  animate();
 })
+/*VIDEOSYNTH*/
+function ACID(input){
+  this.input = input
+  this.init = function(){
+    this.update()
+  }
+  this.update = function(){
+    let TEXT = this.input.innerText
+    let ALGO = this.process(TEXT)
+    let MAIN = document.getElementById("main")
+    let INNER = MAIN.innerHTML
+    MAIN.innerHTML = INNER.slice(0,INNER.indexOf("gl_FragColor")) + "gl_FragColor =" + ALGO + ";}"
+    init()
+  }
+  this.process = function(text){
+    let lines = text.replaceAll("\n\n","\n").split("\n") //splits the input by lines
+    let words = lines.map((l) => l.split(' '))
+    let _lines = []
+    for(let l in words){
+      let line = words[l]
+      if(line && line[0].charAt(0) == "#"){
+        //dont process comments
+      }
+      else if(line.length == 2 && window.TRAM.CONFIG.terminal != 0){
+        //dont process mappings in terminal modes that allow it
+      }
+      else{
+        _lines.push(lines[l])
+      }
+    }
+    lines = _lines
+    let chars = lines.map((l) => l.split("")) //splits the input by chars, removing white spaces
+    let bitmap = text.replaceAll("\n","").split("").map((c) => c == " " ? 0.0 : (c.charCodeAt(0) - 47) / 43)
+    window.parameters.bitmap = new Float32Array(bitmap)
+    window.parameters.bitmapSize = window.parameters.bitmap.length
+    let CMDS = chars //stores the character into variable for clarity
+    let RGB = [["0.0"],["0.0"],["0.0"]] //array that holds the commands for each color channel
+    for(let l = 0; l < CMDS.length; l++){ //iterates over all lines
+      let c = l % 4 //determines color channel from line number
+
+      let CMD = CMDS[l]
+      if(CMD.length > 0){
+        CMD = this.convert(CMD)
+        if(CMD.length > 0){
+          if(c == 0){
+            RGB[0].push(CMD)
+            RGB[1].push(CMD)
+            RGB[2].push(CMD)
+          }
+          else{
+              RGB[c-1].push(CMD)
+          }
+        }
+      }
+
+    }
+    let vec = "vec4(mod(" + RGB[0].join(" + ") + ",1.0001),mod(" + RGB[1].join(" + ") + ",1.0001),mod(" + RGB[2].join(" + ") + ",1.0001),1.0)"
+    return vec
+  }
+  this.analyze = function(c){
+    const LOP_NUMBERS = "0123456789"
+    const HIP_NUMBERS = "abcdefghijklmnopqrstuvwxyz"
+    const NUMBERS = LOP_NUMBERS + HIP_NUMBERS //represent a fixed value
+    const OPERATORS = "ADTM" //are used to string together values
+    const VALUES = "HJRXYZIO" //represent a dynamic value, treated like numbers
+    const FUNCTIONS = "QSVUEKCPNLGBW"
+    const CHARACTERS = OPERATORS + VALUES + FUNCTIONS
+    const VALUE_FUNC = NUMBERS + VALUES
+    const OP_CON = ["+","*","/","-"]
+    const FNC_CON = ["SQUARE(","SINE(","TRIANGLE(","INVERT(","EXPAND(","COMPRESS(","CLOCK(","PLASMA(","SIMPLEX(","LOWER(","BIGGER(","BITMAP(","WATER("]
+    const MAX_ARG_PER_FNC = [2,1,1,1,1,1,1,3,2,2,2,1,3]
+
+    let CHAR = c
+
+    let TYPE = CHAR == " " ? "END" : NUMBERS.includes(CHAR) ? "NUMBER" : CHARACTERS.includes(CHAR) ? "CHARACTER" : "UNKNOWN"
+    let SUB = TYPE == "NUMBER" ? (LOP_NUMBERS.includes(CHAR) ? "LOP" : "HIP") : (OPERATORS.includes(CHAR) ? "OPERATOR" : VALUES.includes(CHAR) ? "VALUE" : FUNCTIONS.includes(CHAR) ? "FUNCTION" : "UNKNOWN")
+    let FUNC = VALUE_FUNC.includes(CHAR) ? "VALUE" : SUB
+
+    let VALUE = false
+    let ARGUMENTS = 0
+    if(TYPE == "NUMBER"){
+      v = SUB == "LOP" ? LOP_NUMBERS.indexOf(CHAR) / (LOP_NUMBERS.length - 1) : HIP_NUMBERS.indexOf(CHAR) / (HIP_NUMBERS.length - 1)
+      v = v == 1 ? "1.0" : v == 0 ? "0.0" : "" + v
+      VALUE = v
+    }
+    else if(TYPE == "CHARACTER"){
+      if(SUB == "OPERATOR"){
+        VALUE = OP_CON[OPERATORS.indexOf(CHAR)]
+      }
+      else if(SUB == "VALUE"){
+        VALUE = CHAR
+      }
+      else if(SUB == "MAPPING"){
+        VALUE = MAP_CON[MAPPINGS.indexOf(CHAR)]
+        ARGUMENTS = 1
+      }
+      else if(SUB == "FUNCTION"){
+        VALUE = FNC_CON[FUNCTIONS.indexOf(CHAR)]
+        ARGUMENTS = MAX_ARG_PER_FNC[FUNCTIONS.indexOf(CHAR)]
+      }
+    }
+
+    return {
+      char: CHAR,
+      type: TYPE,
+      sub: SUB,
+      func: FUNC,
+      value: VALUE,
+      arguments: ARGUMENTS
+    }
+  }
+  this.convert = function(array){
+    let CMD = ""
+    let CLOSE_BRACKETS = 0
+    let ARGUMENT_N = []
+
+    array = array.map((c) => this.analyze(c))
+    array = array.filter((c) => c.type != "UNKNOWN")
+    for(let c = 0; c < array.length; c++){ //iterates over all chars
+
+      let N = c == array.length - 1 ? false : array[c+1] //stores next char
+      let P = c == 0 ? false : array[c-1] //stores previous char
+      let C = array[c] //stores current char
+      if(C.type == "END"){
+        while(CLOSE_BRACKETS>0){
+          CMD += ")"
+          CLOSE_BRACKETS--
+        }
+        ARGUMENT_N = []
+      }
+      else if(C.func == "VALUE"){
+        let ADDED_FLAG = false
+          if(P.sub == "OPERATOR" || P.sub == "FUNCTION" || !P || ARGUMENT_N.length > 0){ //when the previous char was an operator or function or there is none
+            CMD += C.value //add value to command
+            ADDED_FLAG = true
+          }
+          if(N.sub != "OPERATOR"){
+            if(ARGUMENT_N.length > 0){
+              ARGUMENT_N[ARGUMENT_N.length-1] = ARGUMENT_N[ARGUMENT_N.length-1]-1
+              if(ARGUMENT_N[ARGUMENT_N.length-1] == 0){
+                while(ARGUMENT_N[ARGUMENT_N.length-1] == 0){
+                  CMD += ")"
+                  CLOSE_BRACKETS--
+                  ARGUMENT_N.pop()
+                  if(ARGUMENT_N.length > 0 && N && N.sub != "OPERATOR" && N.type != "END"){
+                    CMD += ","
+                  }
+                  else if(ARGUMENT_N.length == 0 && N.type != "END"){
+                    while(CLOSE_BRACKETS>0){
+                      CMD += ")"
+                      CLOSE_BRACKETS--
+                    }
+                  }
+                }
+              }
+              else if(N && N.type != "END"){
+                CMD += ","
+              }
+            }
+          }
+          if((P.type == "NUMBER" || P.sub == "VALUE" || P.type == "END") && !ADDED_FLAG ){ //when the previous char was a number as well add the value with a + operation
+            CMD += "+" + C.value
+          }
+
+      }
+      else if(C.type == "CHARACTER"){
+        if(C.sub == "OPERATOR"){
+          if(C.sub == "OPERATOR" && P.sub == "OPERATOR" && N.sub == "OPERATOR"){
+            //nothing
+          }
+          else if(C.sub == "OPERATOR" && P.sub == "OPERATOR"){
+            if(N){
+              CMD += "+1.0"
+              CMD += C.value
+            }
+
+          }
+          else if(N && P && P.sub != "FUNCTION" && N.sub != "OPERATOR"){
+            CMD += C.value
+          }
+        }
+        else if(C.sub == "FUNCTION"){
+            if(P.sub == "OPERATOR" || P.sub == "MAPPING" || P.sub == "FUNCTION" || !P || ARGUMENT_N.length > 0){ //when the previous char was an operator or there is none
+              CMD += C.value //add value to command
+            }
+            else if(P.type == "NUMBER" || P.sub == "VALUE" || P.type == "END" ){ //when the previous char was a number as well add the value with a + operation
+              CMD += "+" + C.value
+            }
+            if(ARGUMENT_N.length > 0){
+              ARGUMENT_N[ARGUMENT_N.length-1] = ARGUMENT_N[ARGUMENT_N.length-1]-1
+              if(ARGUMENT_N[ARGUMENT_N.length-1] == 0){
+                ARGUMENT_N.pop()
+              }
+            }
+            ARGUMENT_N.push(C.arguments)
+            CLOSE_BRACKETS++
+        }
+      }
+    }
+    while(CLOSE_BRACKETS>0){
+      CMD += ")"
+      CLOSE_BRACKETS--
+    }
+    CMD = CMD.replaceAll("PLASMA(","PLASMA(XY,").replaceAll("PLASMA(XY,)","PLASMA(XY)").replaceAll("SIMPLEX(","SIMPLEX(XY,").replaceAll("SIMPLEX(XY,)","SIMPLEX(XY)").replaceAll("WATER(","WATER(XY,").replaceAll("WATER(XY,)","WATER(XY)")
+    console.log(CMD);
+    return CMD
+  }
+  setTimeout(function () {
+    this.init()
+  }.bind(this), 10)
+}
 /*DRUMMACHINE*/
 function TRAM(input,ipc,storage){
   this.CONFIG = {
@@ -190,6 +402,7 @@ function TRAM(input,ipc,storage){
     }.bind(this))
   }
   this.init = function(){
+    ACID.update()
     this.connect()
     this.update()
     function onMIDIFailure(msg) {
@@ -335,6 +548,7 @@ function TRAM(input,ipc,storage){
     this.EDITOR.addEventListener('input',function(e){
       e.preventDefault()
       this.refresh()
+      ACID.update()
     }.bind(this))
     ipc.on('requireToggleUI', function () {
       document.body.classList.toggle("ui-hidden")
@@ -600,6 +814,7 @@ function TRAM(input,ipc,storage){
       this.TEMPOCHANGETIMESTAMP = performance.now()
       this.RUNNING = false
       this.CONFIG.tempo = Number(tempo)
+      window.parameters.bpmDivisor = 1/(60*1000/tempo*4)
       this.save()
       document.getElementById("tempo").innerText = tempo + "BPM"
       this.createLoop(tempo)

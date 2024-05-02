@@ -8,7 +8,7 @@ app.allowRendererProcessReuse = false
 let mainWindow
 let mapWindow
 let terminalWindow
-let DEV = false
+let DEV = true
 
 function isNotEmptyObject(obj){
   return !(obj && Object.keys(obj).length === 0 && obj.constructor === Object)
@@ -256,7 +256,7 @@ function createWindow () {
     console.log('ERROR 63 - Webcontent destroyed, let\'s quit')
     app.quit()
   })
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('acid.html')
 }
 function createMenu(){
 
@@ -295,7 +295,7 @@ function createMenu(){
         { role: 'reload' },
         { role: 'forceReload' },
         { role: 'togglefullscreen' },
-        // { role: 'toggleDevTools' },
+        { role: 'toggleDevTools' },
         { type: 'separator' },
         {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom In',accelerator: 'CommandOrControl+Shift+NumAdd'},
         {  click (s){requireAction(s);}, type: 'normal', label: 'Zoom Out',accelerator: 'CommandOrControl+Shift+NumSub'},
